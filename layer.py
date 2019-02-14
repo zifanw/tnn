@@ -28,9 +28,20 @@ class Layer():
         pass
 
 
-    def write_spiketimes(self, path, receptive_field):
+    def write_spiketimes(self, path, spikes):
         # create a file with: image_number, spike_position, spike_time
-        pass
+        i = 0
+        f = open(path, "a")
+        f.write('img_number'+','+'spike position'+','+'spike time\n')
+        for x in spikes:
+            st1 =''
+            st2 = ''
+            for spike_time in x:
+                st += str(spike_time) if spike_time != -1 else '-'
+                f.write(str(i)+','+'(12,12) ... (14, 14)'+','+st+'\n')
+                i += 1
+        f.close()
+        print ("Finish writing spike times to "+path)
 
 class Inhibitory_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
@@ -55,5 +66,5 @@ class Inhibitory_Layer(Layer):
         else:
             print("Current mode is not supported")
 
-        self.output = input_spikes[:,None]
+        self.output = input_spikes
         return self.output
