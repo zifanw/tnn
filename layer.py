@@ -12,10 +12,11 @@ class Layer():
         self.threshold = threshold
         self.rf = receptive_field
         self.N,_,_ = self.prev_layer.raw_data.shape
+        self.weights = np.zeros(18)
 
     def reset(self):
+        self.weights.fill(0) 
         # Reset the network, clearing out any accumulator variables, etc
-        pass
 
     def process_image(self):
         """
