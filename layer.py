@@ -49,6 +49,7 @@ class Inhibitory_Layer(Layer):
                 if count_pos(input_spikes[i]) > (self.threshold -1):
                     input_spikes[i].fill(-1) #NO SPIKE
         elif mode == 'HighPass':
+            for i in range(input_spikes.shape[0]):
                 if count_pos(input_spikes[i]) < (self.threshold -1):
                     input_spikes[i].fill(-1) #NO SPIKE
         else:
