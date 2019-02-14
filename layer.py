@@ -33,6 +33,28 @@ class Layer():
         # create a file with: image_number, spike_position, spike_time
         pass
 
+class Excitatory_Layer(Layer):
+    def __init__(self, layer_id, prev_layer, threshold, receptive_field):
+        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input = None
+        self.output = None
+
+    def process_image(self, mode='LowPass'):
+        """
+        Step funtion funtionality to implement 
+        """
+        input_spikes = self.prev_layer.output
+        self.input = input_spikes.copy()
+        for i in range(input_spikes.shape[0]):
+            for j in range(input_spikes.shape[1]):
+                self.weights[input_spikes[i][j]:] += 1
+            for i in range(self.weights.shape[0]):
+                if (self.weight[i] == self.threshhold):
+                    output = i + 1
+            self.output.append(output)
+            self.reset()
+        return self.output
+        
 class Inhibitory_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
         super(Inhibitory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
