@@ -11,9 +11,11 @@ class Layer():
         self.prev_layer = prev_layer
         self.threshold = threshold
         self.rf = receptive_field
-        self.N,_,_ = self.prev_layer.raw_data.shape
+        #self.N,_,_ = self.prev_layer.raw_data.shape
+        self.weights = np.zeros(18)
 
     def reset(self):
+        self.weights.fill(0)
         # Reset the network, clearing out any accumulator variables, etc
         pass
 
@@ -34,12 +36,11 @@ class Layer():
         f = open(path, "a")
         f.write('img_number'+','+'spike position'+','+'spike time\n')
         for x in spikes:
-            st1 =''
-            st2 = ''
+            st =''
             for spike_time in x:
                 st += str(spike_time) if spike_time != -1 else '-'
-                f.write(str(i)+','+'(12,12) ... (14, 14)'+','+st+'\n')
-                i += 1
+            f.write(str(i)+','+"(12 12)to(14 14)"+','+st+'\n')
+            i += 1
         f.close()
         print ("Finish writing spike times to "+path)
 
@@ -47,6 +48,7 @@ class Inhibitory_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
         super(Inhibitory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
         self.input = None
+        self.raw_data = self.input
         self.output = None
 
     def process_image(self, mode='LowPass'):
@@ -67,4 +69,30 @@ class Inhibitory_Layer(Layer):
             print("Current mode is not supported")
 
         self.output = input_spikes
+        return self.output
+
+
+class Excitatory_Layer(Layer):
+    def __init__(self, layer_id, prev_layer, threshold, receptive_field):
+        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input = None
+        self.output = []
+
+    def process_image(self, mode='LowPass'):
+        """
+        Step funtion funtionality
+        """
+        input_spikes = self.prev_layer.output
+        self.input = input_spikes.copy()
+        for sample in self.input:
+            self.reset()
+            for x in sample:
+                if x != -1:
+                    self.weights[x:] += 1
+            if self.weights.sum() > 0 and self.threshold in self.weights:
+                output = np.where(self.weights==self.threshold)[0][0]
+            else:
+                output = -1
+            self.output.append(output)
+        self.output = np.asarray(self.output)[:,None]
         return self.output
