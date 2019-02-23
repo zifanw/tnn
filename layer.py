@@ -78,7 +78,7 @@ class Excitatory_Layer(Layer):
         self.input = None
         self.output = []
 
-    def process_image(self, mode='LowPass'):
+    def process_image(self):
         """
         Step funtion funtionality
         """
@@ -95,4 +95,19 @@ class Excitatory_Layer(Layer):
                 output = -1
             self.output.append(output)
         self.output = np.asarray(self.output)[:,None]
+        return self.output
+
+
+class LateralInhibiton_Layer(Layer):
+    def __init__(self, layer_id, prev_layer, threshold, receptive_field):
+        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input = None
+        self.output = []
+
+    def process_image(self):
+        """
+        Step funtion funtionality
+        """
+        input_spikes = self.prev_layer.output
+
         return self.output
