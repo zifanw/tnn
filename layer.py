@@ -11,12 +11,13 @@ class Layer():
         self.prev_layer = prev_layer
         self.threshold = threshold
         self.rf = receptive_field
-        self.N,_,_ = self.prev_layer.raw_data.shape
+        #self.N,_,_ = self.prev_layer.raw_data.shape
         self.weights = np.zeros(18)
 
     def reset(self):
-        self.weights.fill(0) 
+        self.weights.fill(0)
         # Reset the network, clearing out any accumulator variables, etc
+        pass
 
     def process_image(self):
         """
@@ -29,36 +30,46 @@ class Layer():
         pass
 
 
-    def write_spiketimes(self, path, receptive_field):
+    def write_spiketimes(self, path, spikes):
         # create a file with: image_number, spike_position, spike_time
-        pass
-
-class Excitatory_Layer(Layer):
+        i = 0
+        f = open(path, "a")
+        f.write('img_number'+','+'spike position'+','+'spike time\n')
+        for x in spikes:
+            st =''
+            for spike_time in x:
+                st += str(spike_time) if spike_time != -1 else '-'
+            f.write(str(i)+','+"(12 12)to(14 14)"+','+st+'\n')
+            i += 1
+        f.close()
+        print ("Finish writing spike times to "+path)
+        
+class Winner_Take_All_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
-        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        super(Winner_Take_All_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
         self.input = None
-        self.output = None
-
-    def process_image(self, mode='LowPass'):
+        self.output = []
+    def process_image(self, mode = 'LowPass'):
         """
-        Step funtion funtionality to implement 
+        Winner take all functionality
         """
         input_spikes = self.prev_layer.output
         self.input = input_spikes.copy()
-        for i in range(input_spikes.shape[0]):
-            for j in range(input_spikes.shape[1]):
-                self.weights[input_spikes[i][j]:] += 1
-            for i in range(self.weights.shape[0]):
-                if (self.weight[i] == self.threshhold):
-                    output = i + 1
+        for sample in self.input:
+            min_spike = np.min(sample)
+            for x in sample:
+                if (x == min_spike):
+                    output = min_spike
+                else:
+                    output = -1
             self.output.append(output)
-            self.reset()
-        return self.output
-        
+        return self.output 
+    
 class Inhibitory_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
         super(Inhibitory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
         self.input = None
+        self.raw_data = self.input
         self.output = None
 
     def process_image(self, mode='LowPass'):
@@ -78,5 +89,31 @@ class Inhibitory_Layer(Layer):
         else:
             print("Current mode is not supported")
 
-        self.output = input_spikes[:,None]
+        self.output = input_spikes
+        return self.output
+
+
+class Excitatory_Layer(Layer):
+    def __init__(self, layer_id, prev_layer, threshold, receptive_field):
+        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input = None
+        self.output = []
+
+    def process_image(self, mode='LowPass'):
+        """
+        Step funtion funtionality
+        """
+        input_spikes = self.prev_layer.output
+        self.input = input_spikes.copy()
+        for sample in self.input:
+            self.reset()
+            for x in sample:
+                if x != -1:
+                    self.weights[x:] += 1
+            if self.weights.sum() > 0 and self.threshold in self.weights:
+                output = np.where(self.weights==self.threshold)[0][0]
+            else:
+                output = -1
+            self.output.append(output)
+        self.output = np.asarray(self.output)[:,None]
         return self.output
