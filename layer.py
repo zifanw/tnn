@@ -12,10 +12,8 @@ class Layer():
         self.threshold = threshold
         self.rf = receptive_field
         #self.N,_,_ = self.prev_layer.raw_data.shape
-        self.weights = np.zeros(18)
 
     def reset(self):
-        self.weights.fill(0)
         # Reset the network, clearing out any accumulator variables, etc
         pass
 
@@ -93,27 +91,77 @@ class Inhibitory_Layer(Layer):
         return self.output
 
 
-class Excitatory_Layer(Layer):
-    def __init__(self, layer_id, prev_layer, threshold, receptive_field):
-        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
-        self.input = None
-        self.output = []
+class Excitatory_Nueron(Layer):
+    def __init__(self, input_dim, layer_id, prev_layer, threshold, receptive_field, initial_weight):
+        super(Excitatory_Nueron, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input_dim = input_dim
+        self.weight = initial_weight
+        self.wave = np.zeros(input_dim)
+        self.reset()
+        self.input = self.prev_layer.output
+    
+    def reset(self):
+        self.wave = np.zeros(self.input_dim)
+        self.FireFlag = 0
 
     def process_image(self, mode='LowPass'):
         """
         Step funtion funtionality
         """
-        input_spikes = self.prev_layer.output
-        self.input = input_spikes.copy()
+        
+        self.output=[]
         for sample in self.input:
             self.reset()
+            sample = np.sort(sample)
             for x in sample:
                 if x != -1:
-                    self.weights[x:] += 1
-            if self.weights.sum() > 0 and self.threshold in self.weights:
-                output = np.where(self.weights==self.threshold)[0][0]
-            else:
-                output = -1
-            self.output.append(output)
+                    self.wave[x:] += self.weight
+                diff = self.wave > self.threshold
+                if True in diff:
+                    self.output.append(np.where(diff == True)[0][0])
+                    self.FireFlag += 1
+                    break
+            if not self.FireFlag:
+                self.output.append(-1)
         self.output = np.asarray(self.output)[:,None]
+        return self.output
+
+
+class Excitatory_Layer(Layer):
+    def __init__(self, input_dim, output_dim, layer_id, prev_layer, threshold, receptive_field, initial_weight):
+        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input_dim = input_dim
+        self.weight = initial_weight
+        self.output = None
+        self.neurons = [Excitatory_Nueron(input_dim=input_dim, 
+                                          layer_id=layer_id, 
+                                          prev_layer=prev_layer, 
+                                          threshold=threshold, 
+                                          receptive_field=receptive_field, 
+                                          initial_weight=initial_weight)] * output_dim
+
+    def reset(self):
+        for i in range(len(self.neurons)):
+            self.neurons[i].reset()
+    
+    def process_image(self):
+        output = []
+        for i in range(len(self.neurons)):
+            output.append(self.neurons[i].process_image())
+        self.output = np.concatenate(output, axis=1)
+        return self.output
+
+
+class LateralInhibiton_Layer(Layer):
+    def __init__(self, layer_id, prev_layer, threshold, receptive_field):
+        super(Excitatory_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
+        self.input = None
+        self.output = []
+
+    def process_image(self):
+        """
+        Step funtion funtionality
+        """
+        input_spikes = self.prev_layer.output
+
         return self.output
