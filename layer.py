@@ -45,14 +45,13 @@ class Layer():
 class Winner_Take_All_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
         super(Winner_Take_All_Layer, self).__init__(layer_id, prev_layer, threshold, receptive_field)
-        self.input = None
+        self.input = prev_layer.output
         self.output = []
     def process_image(self, mode = 'LowPass'):
         """
         Winner take all functionality
         """
-        input_spikes = self.prev_layer.output
-        self.input = input_spikes.copy()
+
         for sample in self.input:
             min_spike = np.min(sample)
             for x in sample:
@@ -60,8 +59,9 @@ class Winner_Take_All_Layer(Layer):
                     output = min_spike
                 else:
                     output = -1
-            self.output.append(output)
-        return self.output 
+                self.output.append(output)
+        self.output = np.asarray(self.output)
+        return self.output.reshape((self.input.shape[0], -1))
     
 class Inhibitory_Layer(Layer):
     def __init__(self, layer_id, prev_layer, threshold, receptive_field):
