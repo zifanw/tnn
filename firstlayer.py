@@ -3,11 +3,13 @@ import numpy as np
 from scipy import signal
 
 #Layer may not be both the first layer and an output layer
+
+def count_pos(data):
+    return sum(n > -1 for n in data)
+
 class FirstLayer:
-    def __init__ (self, layer_id, training_raw_data, training_target):
+    def __init__ (self, layer_id):
         self.layer_id = layer_id
-        self.raw_data = training_raw_data
-        self.target = training_target
         self.output = None
 
     def OnCenterFilter(self, x):
@@ -24,12 +26,12 @@ class FirstLayer:
         ave_srd = np.around(srd/8).astype('int')
         return cnt - ave_srd
 
-    def preprocess(self, my_filter, num_bits=3):
+    def preprocess(self, my_filter, raw_data, num_bits=3):
         a = []
         for i in range(2 ** num_bits):
             a += [i] * int(256/(2 ** num_bits))
         a = np.asarray(a)
-        scaled_data = a[self.raw_data]
+        scaled_data = a[raw_data]
         filtered_data = np.zeros_like(scaled_data)
         padded_data = np.pad(scaled_data,
                             ((0,0),(1, 1), (1, 1)),
@@ -49,15 +51,20 @@ class FirstLayer:
         spikes = np.asarray(spikes).reshape((N, W*H))
         return spikes
 
-    def output_spikes(self, img, receptive_field, rp_size=3):
+    def output_spikes(self, img, receptive_field, rp_size=2):
         rp = img[:,receptive_field:receptive_field+rp_size, receptive_field:receptive_field+rp_size]
         On_spikes = self.generate_spikes(rp, 7)
         Off_spikes = self.generate_spikes(-rp, 7)
         self.output = np.concatenate((On_spikes, Off_spikes), axis=1)
+        for i in range(self.output.shape[0]):
+            if count_pos(self.output[i]):
+                temp = self.output[i]
+                temp2 = temp[temp>-1]
+                self.output[i][self.output[i]>-1] -= temp2.min()
         return self.output
 
-    def forward(self, receptive_field):
-        return self.output_spikes(self.preprocess(self.OnCenterFilter), receptive_field)
+    def forward(self, data, receptive_field):
+        return self.output_spikes(self.preprocess(self.OnCenterFilter, data), receptive_field)
 
     def write_spiketimes(self, img, path, receptive_field, rp_size=3):
         rp = img[:,receptive_field:receptive_field+rp_size, receptive_field:receptive_field+rp_size]
