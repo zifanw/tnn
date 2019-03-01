@@ -2,51 +2,44 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-WMAX = 7
-
+WMAX = 8
 
 def count_pos(data):
     return sum(n > -1 for n in data)
 
-def stdp_update_rule(layer, winning_spiketime, update_probability=1/32):
-    '''
+def stdp_update_rule(layer, winning_spiketime, update_probability=1/2):
+    '''2
     Arguments:
-    Input: 
+    Input:
         layer: weights of which layer you wanna do stdp update
         winning_spiketime: spikestimes after WTA
         update_probability: weight update probability
     Return:
         updated_layer: The layer whose weights are updated
     '''
+    input_spikes = layer.prev_layer.output
+    pre_inhibit_spikes = layer.output
+    num_of_input = input_spikes.shape[0]
 
-    prev_layer_ouput = layer.prev_layer.output
-    neuron_spiketime = layer.output
-    num_of_imput = prev_layer_ouput.shape[0]
-
-    for i in range(num_of_imput): # update for each input
+    for i in range(num_of_input): # update for each input
+        output_spikes = winning_spiketime[i].max()
         for j in range(len(layer.neurons)): # iterate across each neuron
-            input_spikes = prev_layer_ouput[i]
-            output_spikes = True if neuron_spiketime[i][j] > -1 else False
-            pre_inhibition = True if winning_spiketime[i][j] > -1 else False
-
-            if output_spikes:
-                for k in range(len(layer.neurons[j].weight)): # update each weight, respectively
-                    if input_spikes[k] > -1: #if input
-                        if winning_spiketime[i][j] >= input_spikes[k]: 
-                            layer.neurons[j].weight[k] = WMAX
-                        else:
-                            layer.neurons[j].weight[k] = 0
+            for k in range(len(layer.neurons[j].weight)): # update each weight, respectively
+                if output_spikes == -1 or output_spikes != pre_inhibit_spikes[i][j]:
+                    if pre_inhibit_spikes[i][j] != -1 and input_spikes[i][k] != -1:
+                        layer.neurons[j].weight[k] = 0
+                    elif pre_inhibit_spikes[i][j] == -1 and input_spikes[i][k] != -1:
+                        if np.random.random_sample()<update_probability:
+                            layer.neurons[j].weight[k] = min(WMAX, layer.neurons[j].weight[k]+1)
+                else:
+                    if input_spikes[i][k] != -1 and input_spikes[i][k] <= output_spikes:
+                        layer.neurons[j].weight[k] = WMAX
                     else:
                         layer.neurons[j].weight[k] = 0
-            else:
-                for k in range(len(layer.neurons[j].weight)): # update each weight, respectively
-                    if pre_inhibition and input_spikes[k] > -1:
-                        layer.neurons[j].weight[k] = 0
-                    elif not pre_inhibition:
-                        if input_spikes[k] > -1 and np.random.random_sample()<update_probability:
-                            layer.neurons[j].weight[k] += 1
-    for neuron in layer.neurons:
-        print (neuron.weight)
+
+    # print ("Weight after updating")
+    # for neuron in layer.neurons:
+    #     print (neuron.weight)
     return layer
 
 
@@ -126,7 +119,8 @@ class Excitatory_Nueron(Layer):
     def __init__(self, input_dim, layer_id, prev_layer, threshold, receptive_field, initial_weight):
         super(Excitatory_Nueron, self).__init__(layer_id, prev_layer, threshold, receptive_field)
         self.input_dim = input_dim
-        self.weight = np.zeros(input_dim) + initial_weight
+        self.weight = np.random.randint(low=0, high=initial_weight, size=input_dim)
+        #self.weight = np.ones(8)
         self.wave = np.zeros(input_dim)
 
     def reset(self):
@@ -167,7 +161,7 @@ class Excitatory_Layer(Layer):
                                           prev_layer=self.prev_layer,
                                           threshold=threshold,
                                           receptive_field=receptive_field,
-                                          initial_weight=initial_weight)] * output_dim
+                                          initial_weight=initial_weight) for _ in range(output_dim)]
 
     def reset(self):
         for i in range(len(self.neurons)):
@@ -202,12 +196,11 @@ class LateralInhibiton_Layer(Layer):
                 fire_neuron = np.where(sample == pos.min())[0]
                 self.output[i] += 1
                 mask = np.zeros(sample.shape[0])
+                fire_neuron = np.random.choice(fire_neuron)
                 mask[fire_neuron] = 1
                 self.output[i] = mask * sample
                 self.output[i] -= 1
         return self.output
-    
+
     def forward(self, data):
         return self.process_image(data.copy())
-
-

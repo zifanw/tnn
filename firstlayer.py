@@ -56,11 +56,11 @@ class FirstLayer:
         On_spikes = self.generate_spikes(rp, 7)
         Off_spikes = self.generate_spikes(-rp, 7)
         self.output = np.concatenate((On_spikes, Off_spikes), axis=1)
-        for i in range(self.output.shape[0]):
-            if count_pos(self.output[i]):
-                temp = self.output[i]
-                temp2 = temp[temp>-1]
-                self.output[i][self.output[i]>-1] -= temp2.min()
+        # for i in range(self.output.shape[0]):
+        #     if count_pos(self.output[i]):
+        #         temp = self.output[i]
+        #         temp2 = temp[temp>-1]
+        #         self.output[i][self.output[i]>-1] -= temp2.min()
         return self.output
 
     def forward(self, data, receptive_field):
