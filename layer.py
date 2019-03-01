@@ -7,7 +7,7 @@ WMAX = 8
 def count_pos(data):
     return sum(n > -1 for n in data)
 
-def stdp_update_rule(layer, winning_spiketime, update_probability=1/2):
+def stdp_update_rule(layer, winning_spiketime, update_probability=1/3):
     '''2
     Arguments:
     Input:
