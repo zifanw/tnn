@@ -5,12 +5,9 @@
 `timescale 1ns / 1ps
 
 module bitonic_sort_2 (input in1, input in2, output reg out1, output reg out2);
-    
-    always@(*)
-    begin
-    if (in1 >= in2) begin out2 = in1; out1 = in2; end
-    if (in1 < in2)  begin out1 = in2; out2 = in1; end
-    end 
+   
+    or U1 (out1, in1, in2);
+    and U2 (out2, in1, in2); 
 
     // Parameter declarations
     

@@ -4,53 +4,53 @@
 
 `timescale 1ns / 1ps
 
-module bitonic_sort_16 (sorted_out, raw_in)
+module bitonic_sort_16 (output [15:0] sorted_out, input [15:0] raw_in);
+   wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
+   wire temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
+   wire temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24;
+   wire temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32;
+   assign temp1 = raw_in[15];
+   assign temp2 = raw_in[14];
+   assign temp3 = raw_in[13];
+   assign temp4 = raw_in[12];
+   assign temp5 = raw_in[11];
+   assign temp6 = raw_in[10];
+   assign temp7 = raw_in[9];
+   assign temp8 = raw_in[8];
+   assign temp9 = raw_in[7];
+   assign temp10 = raw_in[6];
+   assign temp11 = raw_in[5];
+   assign temp12 = raw_in[4];
+   assign temp13 = raw_in[3];
+   assign temp14 = raw_in[2];
+   assign temp15 = raw_in[1];
+   assign temp16 = raw_in[0];
+        	 
    genvar i;
    generate
      for (i = 1; i < 4; i = i + 1) begin:
- 	always@(*) begin 	
-   		reg temp1 = raw_in[15];
-   		reg temp2 = raw_in[14];
-   		reg temp3 = raw_in[13];
-  		reg temp4 = raw_in[12];
-                reg temp5 = raw_in[11];
-                reg temp6 = raw_in[10];
-                reg temp7 = raw_in[9];
-                reg temp8 = raw_in[8];
-		reg temp9 = raw_in[7];
-   		reg temp10 = raw_in[6];
-   		reg temp11 = raw_in[5];
-  		reg temp12 = raw_in[4];
-                reg temp13 = raw_in[3];
-                reg temp14 = raw_in[2];
-                reg temp15 = raw_in[1];
-                reg temp16 = raw_in[0];
-                reg temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24;
-                reg temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32;
- 		bitonic_sort_4 B14 (temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, 
+ 	bitonic_sort_8 B18 (temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, 
 				    temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24);
-        	bitonic_sort_4 B24 (temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16,
+        bitonic_sort_8 B28 (temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16,
 				    temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32);
-        	//TODO::I am still working on this logic
-                temp1 = temp17;
-        	temp2 = temp24;
-        	temp3 = temp10;
-        	temp4 = temp14;
-                temp5 = temp11;
-                temp6 = temp15;
-                temp7 = temp12;
-                temp8 = temp24;
-        	temp9 = temp9;
-        	temp10 = temp13;
-        	temp11 = temp10;
-        	temp12 = temp14;
-                temp13 = temp11;
-                temp14 = temp15;
-                temp15 = temp12;
-                temp16 = temp32;
-		
-        end
-   end
+        //TODO::I am still working on this logic
+        assign temp1 = temp17;
+        assign temp2 = temp24;
+        assign temp3 = temp10;
+        assign temp4 = temp14;
+        assign temp5 = temp11;
+        assign temp6 = temp15;
+        assign temp7 = temp12;
+        assign temp8 = temp24;
+        assign temp9 = temp9;
+        assign temp10 = temp13;
+        assign temp11 = temp10;
+        assign temp12 = temp14;
+        assign temp13 = temp11;
+        assign temp14 = temp15;
+        assign temp15 = temp12;
+        assign temp16 = temp32;
+      end
 
    endgenerate
    // STAGE 1 
