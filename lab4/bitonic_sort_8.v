@@ -12,33 +12,36 @@ module bitonic_sort_8 (input in1, input in2,
 		       output reg out3, output reg out4,
                        output reg out5, output reg out6,
                        output reg out7, output reg out8);
-    
    wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
    wire temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
  
-   assign temp1 = in1;
-   assign temp2 = in2;
-   assign temp3 = in3;
-   assign temp4 = in4;
-   assign temp5 = in5;
-   assign temp6 = in6;
-   assign temp7 = in7;
-   assign temp8 = in8;
+  
+   bitonic_sort_4 B14 (in1, in2, in3, in4, temp1, temp2, temp3, temp4);
+   bitonic_sort_4 B24 (in5, in6, in7, in8, temp5, temp6, temp7, temp8);
+  
+   //assign temp1 = in1;
+   //assign temp2 = in2;
+   //assign temp3 = in3;
+   //assign temp4 = in4;
+   //assign temp5 = in5;
+   //assign temp6 = in6;
+   //assign temp7 = in7;
+   //assign temp8 = in8;
    
    genvar i;
    generate
-     for (i = 1; i < 4; i = i + 1) 
+     for (i = 0; i < 3; i = i + 1) 
      begin:
  	bitonic_sort_4 B14 (temp1, temp2, temp3, temp4, temp9, temp10, temp11, temp12);
         bitonic_sort_4 B24 (temp5, temp6, temp7, temp8, temp13, temp14, temp15, temp16);
         assign temp1 = temp9;
-        assign temp2 = temp13;
+        assign temp2 = temp16;
         assign temp3 = temp10;
-        assign temp4 = temp14;
+        assign temp4 = temp15;
         assign temp5 = temp11;
-        assign temp6 = temp15;
+        assign temp6 = temp14;
         assign temp7 = temp12;
-        assign temp8 = temp16;
+        assign temp8 = temp13;
      end
 
    endgenerate

@@ -9,47 +9,33 @@ module bitonic_sort_16 (output [15:0] sorted_out, input [15:0] raw_in);
    wire temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
    wire temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24;
    wire temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32;
-   assign temp1 = raw_in[15];
-   assign temp2 = raw_in[14];
-   assign temp3 = raw_in[13];
-   assign temp4 = raw_in[12];
-   assign temp5 = raw_in[11];
-   assign temp6 = raw_in[10];
-   assign temp7 = raw_in[9];
-   assign temp8 = raw_in[8];
-   assign temp9 = raw_in[7];
-   assign temp10 = raw_in[6];
-   assign temp11 = raw_in[5];
-   assign temp12 = raw_in[4];
-   assign temp13 = raw_in[3];
-   assign temp14 = raw_in[2];
-   assign temp15 = raw_in[1];
-   assign temp16 = raw_in[0];
-        	 
+   bitonic_sort_8 B18 (raw_in[15], raw_in[14], raw_in[13], raw_in[12], raw_in[11], raw_in[10], raw_in[9], raw_in[8], 
+			temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24);
+   bitonic_sort_8 B28 (raw_in[7], raw_in[6], raw_in[5], raw_in[4], raw_in[3], raw_in[2], raw_in[1], raw_in[0], 
+			temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32);
    genvar i;
    generate
-     for (i = 1; i < 4; i = i + 1) begin:
+     for (i = 0; i < 4; i = i + 1) begin:
  	bitonic_sort_8 B18 (temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, 
 				    temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24);
         bitonic_sort_8 B28 (temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16,
 				    temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32);
-        //TODO::I am still working on this logic
         assign temp1 = temp17;
-        assign temp2 = temp24;
-        assign temp3 = temp10;
-        assign temp4 = temp14;
-        assign temp5 = temp11;
-        assign temp6 = temp15;
-        assign temp7 = temp12;
-        assign temp8 = temp24;
-        assign temp9 = temp9;
-        assign temp10 = temp13;
-        assign temp11 = temp10;
-        assign temp12 = temp14;
-        assign temp13 = temp11;
-        assign temp14 = temp15;
-        assign temp15 = temp12;
-        assign temp16 = temp32;
+        assign temp2 = temp32;
+        assign temp3 = temp18;
+        assign temp4 = temp31;
+        assign temp5 = temp19;
+        assign temp6 = temp30;
+        assign temp7 = temp20;
+        assign temp8 = temp29;
+        assign temp9 = temp21;
+        assign temp10 = temp28;
+        assign temp11 = temp22;
+        assign temp12 = temp27;
+        assign temp13 = temp23;
+        assign temp14 = temp26;
+        assign temp15 = temp24;
+        assign temp16 = temp23;
       end
 
    endgenerate

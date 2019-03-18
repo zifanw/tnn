@@ -9,17 +9,22 @@ module bitonic_sort_4 (input in1, input in2,
                        output reg out1, output reg out2,
 		       output reg out3, output reg out4);
    wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
-   assign temp1 = in1;
-   assign temp2 = in2;
-   assign temp3 = in3;
-   assign temp4 = in4;
+         
+   bitonic_sort_2 B12 (in1, in2, temp1, temp2);
+   bitonic_sort_2 B22 (in3, in4, temp3, temp4);
+         
+   //wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
+   //assign temp1 = in1;
+   //assign temp2 = in2;
+   //assign temp3 = in3;
+   //assign temp4 = in4;
  	 
    genvar i;
    generate
-   for (i = 0; i < 3; i = i + 1) 
+   for (i = 0; i < 2; i = i + 1) 
      begin:
- 	bitonic_sort_2 B12 (.in1(temp1), .in2(temp2), .out1(temp5), .out2(temp6));
-        bitonic_sort_2 B22 (.in1(temp3), .in2(temp4), .out1(temp7), .out2(temp8));
+ 	bitonic_sort_2 B12 (temp1, temp3, temp5, temp6);
+        bitonic_sort_2 B22 (temp2, temp4, temp7, temp8);
         assign temp1 = temp5;
         assign temp2 = temp8;
         assign temp3 = temp6;
