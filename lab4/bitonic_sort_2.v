@@ -4,8 +4,10 @@
 
 `timescale 1ns / 1ps
 
-module bitonic_sort_2 (input in1, input in2, output reg out1, output reg out2);
-   
+module bitonic_sort_2 (in1, in2, out1, out2);
+    
+    input in1, in2;
+    output out1, out2;
     or U1 (out1, in1, in2);
     and U2 (out2, in1, in2); 
 
