@@ -1,0 +1,85 @@
+0 
+23
+-Mamsrun=
+-Masflags=
+-Mcc=gcc
+-Mcfl= -pipe -fPIC -O -I/usr/local/synopsys/vcs-mx_vK-2015.09/include
+-Mcplusplus=g++
+-Mcrt0=
+-Mcrtn=
+-Mcsrc=
+-Mexternalobj=
+-Mldflags= -rdynamic
+-Mobjects= /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libvirsim.so /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/liberrorinf.so /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libsnpsmalloc.so
+-Mout=simv
+-Msaverestoreobj=/usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/vcs_save_restore_new.o
+-Msyslibs=-ldl
+-Mvcsaceobjs=
+-Mxcflags= -pipe -fPIC -I/usr/local/synopsys/vcs-mx_vK-2015.09/include
+-gen_obj
+-picarchive
+/usr/local/synopsys/vcs-mx_vK-2015.09/linux64/bin/vcs1
+bitonic_sort_16.v
+bitonic_sort_2.v
+bitonic_sort_4.v
+bitonic_sort_8.v
+47
+sysc_uni_pwd=/afs/ece.cmu.edu/usr/ibatra/Private/18847_lab4/tnn/lab4
+XDG_SESSION_ID=5512
+XDG_RUNTIME_DIR=/run/user/2663
+XDG_DATA_DIRS=/afs/ece.cmu.edu/usr/ibatra/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share
+VMR_MODE_FLAG=32
+VCS_VERSION=vcs-mx_vK-2015.09
+VCS_TARGET_ARCH=amd64
+VCS_MX_HOME_INTERNAL=1
+VCS_MODE_FLAG=64
+VCS_LIC_EXPIRE_WARNING=0
+VCS_HOME=/usr/local/synopsys/vcs-mx_vK-2015.09
+VCS_DEPTH=0
+VCS_ARG_ADDED_FOR_TMP=1
+VCS_ARCH_OVERRIDE=linux
+VCS_ARCH=linux64
+UNAME=/bin/uname
+TOOL_HOME=/usr/local/synopsys/vcs-mx_vK-2015.09/linux64
+SYNOPSYS_LICENSE=/afs/ece.cmu.edu/support/synopsys/license.dat
+SYNOPSYS_HOME=/usr/local/synopsys
+SSH_TTY=/dev/pts/3
+SSH_CONNECTION=172.29.95.133 60247 128.2.131.37 22
+SSH_CLIENT=172.29.95.133 60247 22
+SSH_ASKPASS=/usr/libexec/openssh/gnome-ssh-askpass
+SELINUX_USE_CURRENT_RANGE=
+SELINUX_ROLE_REQUESTED=
+SELINUX_LEVEL_REQUESTED=
+SCRNAME=vcs
+SCRIPT_NAME=vcs
+QT_PLUGIN_PATH=/usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
+QT_GRAPHICSSYSTEM_CHECKED=1
+QTLIB=/usr/lib64/qt-3.3/lib
+QTINC=/usr/lib64/qt-3.3/include
+QTDIR=/usr/lib64/qt-3.3
+OVA_UUM=0
+MODULESHOME=/usr/share/Modules
+MODULEPATH=/usr/share/Modules/modulefiles:/etc/modulefiles
+LOADEDMODULES=
+LESSOPEN=||/usr/bin/lesspipe.sh %s
+LC_ALL=C
+KRB5CCNAME=KEYRING:persistent:2663
+KDEDIRS=/usr
+HISTCONTROL=ignoredups
+DC_VERSION=syn-vJ-2014.09-SP4
+DC_HOME=/usr/local/synopsys/syn-vJ-2014.09-SP4
+CVS_RSH=ssh
+BASH_FUNC_module()=() {  eval `/usr/bin/modulecmd bash $*`_}
+AKLOG=/usr/bin/aklog
+0
+4
+1553021338 bitonic_sort_2.v
+1553027514 bitonic_sort_4.v
+1553027549 bitonic_sort_8.v
+1553027603 bitonic_sort_16.v
+4
+0 
+1440563255 /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libvirsim.so
+1440562843 /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/liberrorinf.so
+1440562824 /usr/local/synopsys/vcs-mx_vK-2015.09/linux64/lib/libsnpsmalloc.so
+1553027621 simv.daidir

@@ -1,0 +1,56 @@
+{
+    "Modules": {
+        "...MASTER...": {},
+        "bitonic_sort_8_0000": {
+            "Compiled Times": 1,
+            "Compiled": "Yes"
+        },
+        "bitonic_sort_16": {
+            "Compiled Times": 1,
+            "Compiled": "Yes"
+        },
+        "bitonic_sort_4_0000": {}
+    },
+    "CompUnits": {
+        "amcQw_d": {
+            "mod": "...MASTER...",
+            "out": "objs/amcQw_d.o",
+            "checksum": 4294967295,
+            "bytes": 7093,
+            "mode": 4
+        },
+        "ZdrhA_d": {
+            "mod": "bitonic_sort_8_0000",
+            "out": "ZdrhA_d.o",
+            "checksum": 4294967295,
+            "bytes": 7535,
+            "mode": 4,
+            "archive": "archive.5/_7688_archive_1.a"
+        },
+        "TvD28_d": {
+            "mod": "bitonic_sort_16",
+            "out": "TvD28_d.o",
+            "checksum": 4294967295,
+            "bytes": 10536,
+            "mode": 4,
+            "archive": "archive.5/_7688_archive_1.a"
+        }
+    },
+    "reusePaths": {},
+    "ObjArchives": [
+        {
+            "archive": "archive.5/_7688_archive_1.a",
+            "objects": [
+                [
+                    "TvD28_d.o",
+                    10536
+                ],
+                [
+                    "ZdrhA_d.o",
+                    7535
+                ]
+            ],
+            "size": 18071
+        }
+    ]
+}

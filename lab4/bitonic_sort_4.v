@@ -18,7 +18,7 @@ module bitonic_sort_4 (in1, in2,
    genvar i;
    generate
    for (i = 0; i < 2; i = i + 1) 
-     begin:
+     begin:sort4
  	bitonic_sort_2 B32 (temp1, temp3, temp5, temp6);
         bitonic_sort_2 B42 (temp2, temp4, temp7, temp8);
         assign temp1 = temp5;

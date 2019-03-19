@@ -1,0 +1,106 @@
+{
+    "NameTable": {
+        "...MASTER...": [
+            "SIM",
+            "amcQw",
+            "module"
+        ],
+        "bitonic_sort_8": [
+            "bitonic_sort_8",
+            "eYUGe",
+            "module"
+        ],
+        "bitonic_sort_4_0000": [
+            "bitonic_sort_4_0000",
+            "T6wU1",
+            "module"
+        ]
+    },
+    "LVLData": [
+        "SIM"
+    ],
+    "MlibObjs": {},
+    "Misc": {
+        "csrc": "csrc",
+        "cwd": "/afs/ece.cmu.edu/usr/ibatra/Private/18847_lab4/tnn/lab4",
+        "csrc_abs": "/afs/ece.cmu.edu/usr/ibatra/Private/18847_lab4/tnn/lab4/csrc",
+        "default_output_dir": "csrc",
+        "daidir": "simv.daidir",
+        "daidir_abs": "/afs/ece.cmu.edu/usr/ibatra/Private/18847_lab4/tnn/lab4/simv.daidir",
+        "archive_dir": "archive.4"
+    },
+    "PrevCompiledModules": {
+        "...MASTER...": {
+            "amcQw_d": {
+                "bytes": 7093,
+                "mod": "...MASTER...",
+                "out": "objs/amcQw_d.o",
+                "mode": 4,
+                "checksum": 4294967295
+            }
+        }
+    },
+    "CompileStatus": "Successful",
+    "CompileProcesses": [
+        "cgproc.6283.json"
+    ],
+    "SIMBData": {
+        "out": "amcQwB.o",
+        "bytes": 55756
+    },
+    "CompileStrategy": "fullobj",
+    "stat": {
+        "ru_self_cgstart": {
+            "ru_maxrss_kb": 41916,
+            "ru_utime_sec": 0.059133999999999999,
+            "ru_stime_sec": 0.048758999999999997,
+            "ru_majflt": 4,
+            "ru_minflt": 11339,
+            "ru_nivcsw": 6,
+            "ru_nvcsw": 110
+        },
+        "nMops": 616,
+        "mopSpeed": 39210.693825588809,
+        "ru_childs_cgstart": {
+            "ru_maxrss_kb": 0,
+            "ru_utime_sec": 0.0,
+            "ru_stime_sec": 0.0,
+            "ru_majflt": 0,
+            "ru_minflt": 0,
+            "ru_nivcsw": 0,
+            "ru_nvcsw": 0
+        },
+        "Frontend(%)": 79.009673454117902,
+        "nQuads": 184,
+        "totalObjSize": 80460,
+        "ru_self_end": {
+            "ru_maxrss_kb": 48644,
+            "ru_utime_sec": 0.074843999999999994,
+            "ru_stime_sec": 0.067568000000000003,
+            "ru_majflt": 5,
+            "ru_minflt": 13502,
+            "ru_nivcsw": 6,
+            "ru_nvcsw": 161
+        },
+        "CodeGen(%)": 20.990326545882098,
+        "ru_childs_end": {
+            "ru_maxrss_kb": 0,
+            "ru_utime_sec": 0.0,
+            "ru_stime_sec": 0.0,
+            "ru_majflt": 0,
+            "ru_minflt": 0,
+            "ru_nivcsw": 0,
+            "ru_nvcsw": 0
+        },
+        "quadSpeed": 11712.285168682372,
+        "mop/quad": 3.347826086956522,
+        "outputSizePerQuad": 437.0
+    },
+    "CurCompileUdps": {},
+    "PEModules": [],
+    "CurCompileModules": [
+        "...MASTER...",
+        "bitonic_sort_8",
+        "bitonic_sort_4_0000"
+    ]
+}

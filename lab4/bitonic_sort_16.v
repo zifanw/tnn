@@ -15,7 +15,7 @@ module bitonic_sort_16 (output [15:0] sorted_out, input [15:0] raw_in);
 			temp25, temp26, temp27, temp28, temp29, temp30, temp31, temp32);
    genvar i;
    generate
-     for (i = 0; i < 4; i = i + 1) begin:
+     for (i = 0; i < 4; i = i + 1) begin:sort16
  	bitonic_sort_8 B18 (temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, 
 				    temp17, temp18, temp19, temp20, temp21, temp22, temp23, temp24);
         bitonic_sort_8 B28 (temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16,
