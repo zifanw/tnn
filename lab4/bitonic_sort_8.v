@@ -12,54 +12,43 @@ module bitonic_sort_8 (in1, in2,
 		       out3, out4,
                        out5, out6,
                        out7, out8);
-   wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
-   wire temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
-   
+   //wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
+   //wire temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
    input in1, in2, in3, in4, in5, in6, in7, in8;
    output out1, out2, out3, out4, out5, out6, out7, out8;
-   bitonic_sort_4 B14 (in1, in2, in3, in4, temp1, temp2, temp3, temp4);
-   bitonic_sort_4 B24 (in5, in6, in7, in8, temp5, temp6, temp7, temp8);
-  
+ 
+   parameter N = 8; 
+   wire [N-1:0] temp;
+   bitonic_sort_4 B14 (in1, in2, in3, in4, temp[7], temp[6], temp[5], temp[4]);
+   bitonic_sort_4 B24 (in5, in6, in7, in8, temp[3], temp[2], temp[1], temp[0]);
+   
+   wire temp_out1, temp_out2;
    genvar i;
+   genvar j;
+   genvar k;
    generate
-     for (i = 0; i < 3; i = i + 1) 
-     begin:sort8
- 	bitonic_sort_4 B14 (temp1, temp2, temp3, temp4, temp9, temp10, temp11, temp12);
-        bitonic_sort_4 B24 (temp5, temp6, temp7, temp8, temp13, temp14, temp15, temp16);
-        assign temp1 = temp9;
-        assign temp2 = temp16;
-        assign temp3 = temp10;
-        assign temp4 = temp15;
-        assign temp5 = temp11;
-        assign temp6 = temp14;
-        assign temp7 = temp12;
-        assign temp8 = temp13;
+   for (i = 0; i < $clog2(N); i = i + 1)
+     begin:substage
+       for(j = 0; j < N; j = j + N/2**i)
+         begin:group
+           for (k = j; k - j < N/(2**(i+1)); k = k+1)
+           begin:sort
+           bitonic_sort_2 B21 (temp[k], temp[k+(N/(2**(i+1)))-1], temp_out1, temp_out2);
+           assign temp[k] = temp_out1;
+           assign temp[k+(N/(2**(i+1)))-1] = temp_out2;
+           end
+         end
      end
-
    endgenerate
-   // STAGE 1 
-   //bitonic_sort_2 C1A    ( in1 ,in2 ,data_B1 ,data_S1);
-   //bitonic_sort_2 C1B    ( in3 ,in4 ,data_B2 ,data_S2);
-
-
-   // STAGE 2
-   //bitonic_sort_2 C2A    ( data_B1 ,data_S2 ,data_B3 ,data_S3);  
-   //bitonic_sort_2 C2B    ( data_S1 ,data_B2 ,data_B4 ,data_S4);  
-
-   // STAGE 3
-   //bitonic_sort_2 C3A    ( data_B3 ,data_S4 ,data_B5  ,data_S5 );
-   //bitonic_sort_2 C3B    ( data_S3 ,data_B4 ,data_B6  ,data_S6 );
-
-
-
-   assign out1 = temp1;
-   assign out2 = temp2;
-   assign out3 = temp3;
-   assign out4 = temp4;
-   assign out5 = temp5;
-   assign out6 = temp6;
-   assign out7 = temp7;
-   assign out8 = temp8;
+ 
+   assign out1 = temp[7];
+   assign out2 = temp[6];
+   assign out3 = temp[5];
+   assign out4 = temp[4];
+   assign out5 = temp[3];
+   assign out6 = temp[2];
+   assign out7 = temp[1];
+   assign out8 = temp[0];
     // Parameter declarations
     
     // Input/output declarations

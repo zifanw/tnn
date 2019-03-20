@@ -26,13 +26,13 @@ module bitonic_sort_4 (in1, in2,
    generate
    for (i = 0; i < $clog2(N); i = i + 1)
      begin:substage
-       for(j = 0; j < N; j = j + N/(i+1))
+       for(j = 0; j < N; j = j + N/2**i)
          begin:group
-           for (k = j; k - j < N/((i+1)*2); k = k+1)
+           for (k = j; k - j < N/(2**i+1); k = k+1)
            begin:sort
-           bitonic_sort_2 B23 (temp[k], temp[k+(N/((i+1)*2))-1], temp_out1, temp_out2);
+           bitonic_sort_2 B23 (temp[k], temp[k+(N/(2**(i+1)))-1], temp_out1, temp_out2);
            assign temp[k] = temp_out1;
-           assign temp[k+(N/((i+1)*2))-1] = temp_out2;
+           assign temp[k+(N/(2**(i+1)))-1] = temp_out2;
            end
          end
      end
