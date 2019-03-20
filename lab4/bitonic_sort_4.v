@@ -8,31 +8,40 @@ module bitonic_sort_4 (in1, in2,
                        in3, in4,
                        out1, out2,
 		       out3, out4);
-   wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
+   //wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
    
    input in1, in2, in3, in4;
    output out1, out2, out3, out4;      
-   bitonic_sort_2 B12 (in1, in2, temp1, temp2);
-   bitonic_sort_2 B22 (in3, in4, temp3, temp4);
-         
-   genvar i;
-   generate
-   for (i = 0; i < 2; i = i + 1) 
-     begin:sort4
- 	bitonic_sort_2 B32 (temp1, temp3, temp5, temp6);
-        bitonic_sort_2 B42 (temp2, temp4, temp7, temp8);
-        assign temp1 = temp5;
-        assign temp2 = temp8;
-        assign temp3 = temp6;
-        assign temp4 = temp7;
-    end
+   
+   parameter N = 4; 
+   wire [N-1:0] temp;
+   bitonic_sort_2 B12 (in1, in2, temp[3], temp[2]);
+   bitonic_sort_2 B22 (in3, in4, temp[1], temp[0]);
+   
 
+   wire temp_out1, temp_out2;
+   genvar i;
+   genvar j;
+   genvar k;
+   generate
+   for (i = 0; i < $clog2(N); i = i + 1)
+     begin:substage
+       for(j = 0; j < N; j = j + N/(i+1))
+         begin:group
+           for (k = j; k - j < N/((i+1)*2); k = k+1)
+           begin:sort
+           bitonic_sort_2 B23 (temp[k], temp[k+(N/((i+1)*2))-1], temp_out1, temp_out2);
+           assign temp[k] = temp_out1;
+           assign temp[k+(N/((i+1)*2))-1] = temp_out2;
+           end
+         end
+     end
    endgenerate
 
-   assign out1 = temp1;
-   assign out2 = temp2;
-   assign out3 = temp3;
-   assign out4 = temp4;
+   assign out1 = temp[3];
+   assign out2 = temp[2];
+   assign out3 = temp[1];
+   assign out4 = temp[0];
     // Parameter declarations
     
     // Input/output declarations
