@@ -24,15 +24,15 @@ module bitonic_sort_4 (in1, in2,
    genvar j;
    genvar k;
    generate
-   for (i = 0; i < $clog2(N); i = i + 1)
+   for (i = 1; i < $clog2(N)+1; i = i + 1)
      begin:substage
-       for(j = 0; j < N; j = j + N/2**i)
+       for(j = 0; j < N; j = j + N/2**(i-1))
          begin:group
-           for (k = j; k - j < N/(2**i+1); k = k+1)
+           for (k = j; 2*k < j + N; k = k+1)
            begin:sort
-           bitonic_sort_2 B23 (temp[k], temp[k+(N/(2**(i+1)))-1], temp_out1, temp_out2);
+           bitonic_sort_2 B23 (temp[k], temp[k+(N/(2**i))], temp_out1, temp_out2);
            assign temp[k] = temp_out1;
-           assign temp[k+(N/(2**(i+1)))-1] = temp_out2;
+           assign temp[k+(N/(2**i))] = temp_out2;
            end
          end
      end
