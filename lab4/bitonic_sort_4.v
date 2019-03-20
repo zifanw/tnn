@@ -4,22 +4,19 @@
 
 `timescale 1ns / 1ps
 
-module bitonic_sort_4 (in1, in2, 
-                       in3, in4,
-                       out1, out2,
-		       out3, out4);
+module bitonic_sort_4 (output [3:0] sorted_out, input [3:0] raw_in);
+
    //wire temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8;
-   
-   input in1, in2, in3, in4;
-   output out1, out2, out3, out4;      
-   
+       
    parameter N = 4; 
    wire [N-1:0] temp;
-   bitonic_sort_2 B12 (in1, in2, temp[3], temp[2]);
-   bitonic_sort_2 B22 (in3, in4, temp[1], temp[0]);
+   bitonic_sort_2 B12 (raw_in[0], raw_in[1], temp[0], temp[1]);
+   bitonic_sort_2 B22 (raw_in[2], raw_in[3], temp[3], temp[2]);
    
 
    wire temp_out1, temp_out2;
+   wire [N-1:0] temp_out;
+  // wire [1:0] temp_out;
    genvar i;
    genvar j;
    genvar k;
@@ -30,18 +27,21 @@ module bitonic_sort_4 (in1, in2,
          begin:group
            for (k = j; 2*k < j + N; k = k+1)
            begin:sort
-           bitonic_sort_2 B23 (temp[k], temp[k+(N/(2**i))], temp_out1, temp_out2);
-           assign temp[k] = temp_out1;
-           assign temp[k+(N/(2**i))] = temp_out2;
+	   //com1 = {temp[k], temp[k+(N/(2**i))]};
+	   //temp_out = {temp_out1, temp_out2};
+           bitonic_sort_2 B23 (temp[k], temp[k+(N/(2**i))],temp_out[k], temp_out[k+(N/(2**i))]);
+	   //{temp_out1, temp_out2} = temp_out;
+           //assign temp[k] = temp_out1;
+           //assign temp[k+(N/(2**i))] = temp_out2;
            end
          end
      end
    endgenerate
 
-   assign out1 = temp[3];
-   assign out2 = temp[2];
-   assign out3 = temp[1];
-   assign out4 = temp[0];
+   assign sorted_out[0] = temp_out[0];
+   assign sorted_out[1] = temp_out[1];
+   assign sorted_out[2] = temp_out[2];
+   assign sorted_out[3] = temp_out[3];
     // Parameter declarations
     
     // Input/output declarations
