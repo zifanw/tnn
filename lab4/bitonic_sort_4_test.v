@@ -20,7 +20,7 @@ module bitonic_sort_tb;
         $dumpfile("bitonic_sort_4.vcd");
         $dumpvars(0, bitonic_sort_tb);
 
-        raw_in = ~4'b1;
+        raw_in = ~4'b0;
 
         #5
         raw_in[0] = 0;
@@ -29,18 +29,13 @@ module bitonic_sort_tb;
         raw_in[1] = 0;
 
         #2
-        raw_in[1] = 1;
+        raw_in[3] = 0;
 
         #2
-        raw_in[2] = 1;
-
-
-        #2
-        raw_in[3] = 1;
+        raw_in[2] = 0;
 
         #10
         raw_in = ~4'b0;
-
         #200
         $finish;
 
