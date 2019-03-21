@@ -7,7 +7,6 @@
 module bitonic_sort_4 (output [3:0] sorted_out, input [3:0] raw_in);
 
    //parameter N = 4;
-   parameter flip = 0; 
    wire temp [0:2][0:3];
 
    bitonic_sort_2 B12 (raw_in[0], raw_in[1], temp[0][0], temp[0][1]);
@@ -52,10 +51,10 @@ module bitonic_sort_4 (output [3:0] sorted_out, input [3:0] raw_in);
   //   assign sorted_out[2] = temp[2][1];
   //   assign sorted_out[3] = temp[2][0];
   // end
-   assign sorted_out[0] = flip == 0 ? temp[2][0] : temp[2][3];
-   assign sorted_out[1] = flip == 0 ? temp[2][1] : temp[2][2];  
-   assign sorted_out[2] = flip == 0 ? temp[2][2] : temp[2][1];
-   assign sorted_out[3] = flip == 0 ? temp[2][3] : temp[2][0];
+   assign sorted_out[0] = temp[2][0];
+   assign sorted_out[1] = temp[2][1];  
+   assign sorted_out[2] = temp[2][2];
+   assign sorted_out[3] = temp[2][3];
 // Parameter declarations
     
     // Input/output declarations
