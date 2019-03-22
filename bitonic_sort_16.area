@@ -1,0 +1,31 @@
+ 
+****************************************
+Report : area
+Design : bitonic_sort_16
+Version: J-2014.09-SP4
+Date   : Thu Mar 21 16:49:10 2019
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    NangateOpenCellLibrary (File: /afs/ece.cmu.edu/usr/zifanw/Private/18847_lab4/NangateOpenCellLibrary_typical_ccs.db)
+
+Number of ports:                           32
+Number of nets:                            95
+Number of cells:                           34
+Number of combinational cells:              0
+Number of sequential cells:                 0
+Number of macros/black boxes:               0
+Number of buf/inv:                          0
+Number of references:                      34
+
+Combinational area:                212.799997
+Buf/Inv area:                       85.120001
+Noncombinational area:               0.000000
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:                   212.799997
+Total area:                 undefined
+1
