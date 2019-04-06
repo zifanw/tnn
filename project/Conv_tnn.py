@@ -3,7 +3,7 @@ import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
 from collections import deque
-from sklearn.datasets import fetch_mldata
+from sklearn.datasets import fetch_openml
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
@@ -525,12 +525,13 @@ class MNISTmodel():
 
 if __name__ == "__main__":
     Net = MNISTmodel()
-    mnist = fetch_mldata('MNIST original')
+    mnist = fetch_openml('mnist_784', version=1, cache=True)
     N, _ = mnist.data.shape
 
+    
     # Reshape the data to be square
-    mnist.square_data = mnist.data.reshape(N,28,28)
-    X_train, X_test, y_train, y_test = train_test_split(mnist.square_data, 
+    square_data = mnist.data.reshape(N,28,28)
+    X_train, X_test, y_train, y_test = train_test_split(square_data, 
                                                         mnist.target, 
                                                         test_size=0.3, 
                                                         random_state=42)
