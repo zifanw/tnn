@@ -535,6 +535,8 @@ if __name__ == "__main__":
                                                         test_size=0.3, 
                                                         random_state=42)
     Net.train(X_train, y_train)
+    Net.save_weights('weights.npz')
+    Net.load_weights('weights.npz')
     Net.test(X_test, y_test)
 
 
