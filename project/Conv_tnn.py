@@ -96,12 +96,13 @@ class DoG(Layer):
             return spiketimes[:,:,1:]+1
         
     def forward(self, x, num_bits=5):
+        W, H = x.shape
+        x = x.astype('int')
         a = []
         for i in range(2 ** num_bits):
             a += [i] * int(256/(2 ** num_bits))
         a = np.asarray(a)
         scaled_data = a[x]
-        W, H = scaled_data.shape
 
         filtered_data = np.zeros((W, H, 2))
         padded_data = np.pad(scaled_data,
