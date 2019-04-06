@@ -1,4 +1,7 @@
 import math
+import os
+os.environ["OMP_NUM_THREADS"] = "96"
+os.system("taskset -p 0xff %d" % os.getpid())
 import numpy as np
 from scipy import stats
 import matplotlib.pyplot as plt
@@ -8,6 +11,11 @@ from sklearn import svm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
+
+import datetime as dt
+from multiprocessing import Process, current_process
+import sys
+
 
 MAX_TIME = 32
 MAX_ITERATION = 50
@@ -500,6 +508,11 @@ class MNISTmodel():
             y.append(self.inference(x)) 
         self.train_svm(y, labels)
         print ("SVM Training is finished")
+ 
+    
+    def train_one(self, x):
+        self.forward(x)
+        self.learn()        
 
     def test(self, data, labels):
         y = []
@@ -509,20 +522,25 @@ class MNISTmodel():
         self.test_svm(y, labels)
         print ("Test is finished")   
     
-    def save_weights(path):
+    def save_weights(self, path):
         save_dict = dict()
         if self.model is not None:
             for k, v in self.model.items():
                 if 'conv' in k:
                     save_dict[k] = v.weights 
-        np.savez(path, **savez_dict)
+        np.savez(path, **save_dict)
 
-    def load_weights(path):
+    def load_weights(self, path):
         weights = np.load(path)
         if self.model is not None:
             for k, v in self.model.items():
                 if 'conv' in k:
                     model[k].weights = weights[k]     
+
+def main(Net, X_train, y_train):
+    Net.train(X_train, y_train)
+    return Net
+
 
 if __name__ == "__main__":
     Net = MNISTmodel()
@@ -540,6 +558,7 @@ if __name__ == "__main__":
     Net.save_weights('weights.npz')
     Net.load_weights('weights.npz')
     Net.test(X_test, y_test)
+
 
 
 
