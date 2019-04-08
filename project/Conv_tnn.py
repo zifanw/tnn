@@ -488,25 +488,26 @@ class MNISTmodel():
                 if 'conv' in k:
                     self.model[k].stdp_update()
     
-    def train_svm(self, x, y):
-        self.clf.fit(x, y)  
-    
     def test_svm(self, x, y):
         pred = self.clf.predict(x)
         acc = accuracy_score(y, pred)
         print ("Test accuracy of SVM is %f" % acc)
 
-    def train(self, data, labels):
+    def train(self, data):
         print ("CTNN Training starts ...")
         for x in tqdm(data):
             self.forward(x)
             self.learn()
         print ("CTNN Training CTNN is finished")
+
+    def train_svm(self, data, labels):
         print ("SVM Training starts")
         y = []
         for x in tqdm(data):
             y.append(self.inference(x)) 
-        self.train_svm(y, labels)
+        y_crime = np.asarray(y)
+        np.save('y_crime.npy', y_crime)
+        self.clf.fit(y, labels)
         print ("SVM Training is finished")
  
     
@@ -535,7 +536,7 @@ class MNISTmodel():
         if self.model is not None:
             for k, v in self.model.items():
                 if 'conv' in k:
-                    model[k].weights = weights[k]     
+                    self.model[k].weights = weights[k]     
 
 def main(Net, X_train, y_train):
     Net.train(X_train, y_train)
@@ -554,7 +555,8 @@ if __name__ == "__main__":
                                                         mnist.target, 
                                                         test_size=0.3, 
                                                         random_state=42)
-    Net.train(X_train, y_train)
+    # Net.train(X_train)
+    Net.train_svm(X_train, y_train)
     Net.save_weights('weights.npz')
     Net.load_weights('weights.npz')
     Net.test(X_test, y_test)
