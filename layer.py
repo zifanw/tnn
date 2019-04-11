@@ -7,7 +7,7 @@ WMAX = 8
 def count_pos(data):
     return sum(n > -1 for n in data)
 
-def stdp_update_rule(layer, winning_spiketime, update_probability=1/3):
+def stdp_update_rule(layer, winning_spiketime, update_probability=1/32):
     '''2
     Arguments:
     Input:
@@ -25,8 +25,8 @@ def stdp_update_rule(layer, winning_spiketime, update_probability=1/3):
         output_spikes = winning_spiketime[i].max()
         for j in range(len(layer.neurons)): # iterate across each neuron
             for k in range(len(layer.neurons[j].weight)): # update each weight, respectively
-                if output_spikes == -1 or output_spikes != pre_inhibit_spikes[i][j]:
-                    if pre_inhibit_spikes[i][j] != -1 and input_spikes[i][k] != -1:
+                if output_spikes == -1 or output_spikes != pre_inhibit_spikes[i][j]: #No output spike
+                    if pre_inhibit_spikes[i][j] != -1 and input_spikes[i][k] != -1: #pre-inhibit and input spike
                         layer.neurons[j].weight[k] = 0
                     elif pre_inhibit_spikes[i][j] == -1 and input_spikes[i][k] != -1:
                         if np.random.random_sample()<update_probability:
@@ -116,7 +116,7 @@ class Inhibitory_Layer(Layer):
 
 
 class Excitatory_Nueron(Layer):
-    def __init__(self, input_dim, layer_id, prev_layer, threshold, receptive_field, initial_weight):
+    def __init__(self, input_dim, layer_id, prev_layer, threshold, initial_weight, receptive_field):
         super(Excitatory_Nueron, self).__init__(layer_id, prev_layer, threshold, receptive_field)
         self.input_dim = input_dim
         self.weight = np.random.randint(low=0, high=initial_weight, size=input_dim)
@@ -125,7 +125,6 @@ class Excitatory_Nueron(Layer):
 
     def reset(self):
         self.wave = np.zeros(self.input_dim)
-        self.FireFlag = 0
 
     def process_image(self, data):
         """
@@ -135,16 +134,14 @@ class Excitatory_Nueron(Layer):
         self.output = []
         for sample in self.input:
             self.reset()
-            sample = np.sort(sample)
+#            sample = np.sort(sample)
             for i, x in enumerate(sample):
                 if x != -1:
                     self.wave[x:] += self.weight[i]
-                diff = self.wave > self.threshold
-                if True in diff:
-                    self.output.append(np.where(diff == True)[0][0])
-                    self.FireFlag += 1
-                    break
-            if not self.FireFlag:
+            diff = self.wave > self.threshold
+            if True in diff:
+                self.output.append(np.where(diff == True)[0][0]) 
+            else:
                 self.output.append(-1)
         self.output = np.asarray(self.output)[:,None]
         return self.output
@@ -196,7 +193,7 @@ class LateralInhibiton_Layer(Layer):
                 fire_neuron = np.where(sample == pos.min())[0]
                 self.output[i] += 1
                 mask = np.zeros(sample.shape[0])
-                fire_neuron = np.random.choice(fire_neuron)
+                fire_neuron = np.random.choice(fire_neuron) #random choose one to fire if multiple
                 mask[fire_neuron] = 1
                 self.output[i] = mask * sample
                 self.output[i] -= 1

@@ -507,10 +507,16 @@ class MNISTmodel():
             y.append(self.inference(x)) 
         y_crime = np.asarray(y)
         np.save('y_crime.npy', y_crime)
-        self.clf.fit(y, labels)
+        self.clf.fit(y_crime, labels)
         print ("SVM Training is finished")
- 
     
+    def train_svm2(self, labels):
+        y = np.load('y_crime.npy')
+        self.clf.fit(y, labels)
+        acc=self.clf.score(y, labels)
+        print ("SVM Training is finished")
+        print ("Training Accuracy is %.3f" % acc)
+        
     def train_one(self, x):
         self.forward(x)
         self.learn()        
@@ -556,9 +562,11 @@ if __name__ == "__main__":
                                                         test_size=0.3, 
                                                         random_state=42)
     # Net.train(X_train)
-    Net.train_svm(X_train, y_train)
-    Net.save_weights('weights.npz')
+    # Net.train_svm(X_train, y_train)
+    # Net.save_weights('weights.npz')
     Net.load_weights('weights.npz')
+    Net.train_svm2(y_train)
+    print ("SVM Training is finished")    
     Net.test(X_test, y_test)
 
 
