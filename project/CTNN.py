@@ -7,13 +7,12 @@ import torchvision.transforms as transforms
 import torch
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from torchvision.datasets import MNIST
-from sklearn.datasets import fetch_openml
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm, trange
 
-use_cuda = False
+use_cuda = True
 MAX_EPOCH = 5
 
 class InputTransform:
@@ -110,7 +109,6 @@ def inference(net, data_loader):
     return np.vstack(outputs)
     
 if __name__ == "__main__":
-    mnist = fetch_openml('mnist_784', version=1, cache=True)
 
     kernels = [ utils.DoGKernel(3,3/9,6/9), utils.DoGKernel(3,6/9,3/9),
             utils.DoGKernel(7,7/9,14/9), utils.DoGKernel(7,14/9,7/9),
