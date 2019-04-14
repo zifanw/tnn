@@ -127,6 +127,7 @@ def GMP(data):
     max_pool = np.max(final_pot, axis=(1,2))
     return max_pool.reshape((1,C))
 
+
 if __name__ == "__main__":
 
     kernels = [ utils.DoGKernel(3,1,2), utils.DoGKernel(3,2,1)]
@@ -149,10 +150,10 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC()
 
-    net = train(net, MNIST_loader)
-    torch.save(net.state_dict(), "./checkpoint.pt")
+    #net = train(net, MNIST_loader)
+    #torch.save(net.state_dict(), "./checkpoint.pt")
     net.state_dict(torch.load("./checkpoint.pt"))
-    train_outputs, train_y = inference(net, MNIST_small_loader)
+    train_outputs, train_y = inference(net, MNIST_loader)
     
     train_mean = train_outputs.mean()
     train_outputs -= train_mean
