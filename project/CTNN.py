@@ -23,7 +23,15 @@ class InputTransform:
    def __call__(self, image):
       image = self.to_tensor(image) * 255
       image.unsqueeze_(0)
-      image = self.filter(image)
+      C = image.size(1)
+      x = []
+      for c in range(C):
+        img = image[:,c] # 1x32x32
+        img.unsqueeze_(1) # 1x1x32x32
+        img = self.filter(img) #1x2x32x32
+        x.append(img)
+      image = torch.cat(x, 1)
+      #image = self.filter(image)
       image = sf.local_normalization(image, 8)
       return self.temporal_transform(image)
 
