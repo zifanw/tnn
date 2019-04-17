@@ -184,7 +184,7 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC(verbose=True) # (60000 x 100)
 
-    net = train(net, MNIST_loader)
+    net = train(net, CIFAR_train)
     torch.save(net.state_dict(), "./checkpoint.pt")
     net.state_dict(torch.load("./cifar_checkpoint.pt"))
     train_outputs, train_y = inference(net, CIFAR_loader)
