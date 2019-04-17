@@ -31,6 +31,7 @@ class InputTransform:
         img = self.filter(img) #1x2x32x32
         x.append(img)
       image = torch.cat(x, 1)
+      
       #image = self.filter(image)
       image = sf.local_normalization(image, 8)
       return self.temporal_transform(image)
@@ -39,8 +40,8 @@ class InputTransform:
 class CTNN(nn.Module):
     def __init__(self):
         super(CTNN, self).__init__()
-        self.conv1 = snn.Convolution(2, 30, 5, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
-        self.conv2 = snn.Convolution(30, 100, 5, 0.8, 0.02)
+        self.conv1 = snn.Convolution(6, 60, 5, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
+        self.conv2 = snn.Convolution(60, 150, 5, 0.8, 0.02)
         #self.conv3 = snn.Convolution(250, 200, 5, 0.8, 0.05)
 
         self.stdp1 = snn.STDP(self.conv1, (0.004, -0.003))
@@ -190,7 +191,7 @@ if __name__ == "__main__":
     
 
     net = CTNN()
-    clf = svm.SVC(verbose=True) # (60000 x 100)
+    clf = svm.SVC(verbose=True) # (60000 x 150)
 
     net = train(net, CIFAR_train)
     torch.save(net.state_dict(), "./checkpoint.pt")
