@@ -6,8 +6,7 @@ import SpykeTorch.utils as utils
 import torchvision.transforms as transforms
 import torch
 from torch.utils.data import Dataset, DataLoader, TensorDataset
-from torchvision.datasets import MNIST
-from torchvision.datasets import CIFAR10 as CIFAR
+from torchvision.datasets import MNIST, CIFAR
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm, trange
@@ -23,35 +22,16 @@ class InputTransform:
    def __call__(self, image):
       image = self.to_tensor(image) * 255
       image.unsqueeze_(0)
-      C = image.size(1)
-      x = []
-      for c in range(C):
-        img = image[:,c] # 1x32x32
-        img.unsqueeze_(1) # 1x1x32x32
-        img = self.filter(img) #1x2x32x32
-        x.append(img)
-      image = torch.cat(x, 1)
+      image = self.filter(image)
+      print (image.shape)
       image = sf.local_normalization(image, 8)
       return self.temporal_transform(image)
-
-# class InputTransform:
-#    def __init__(self, filter):
-#       self.to_tensor = transforms.ToTensor()
-#       self.filter = filter
-#       self.temporal_transform = utils.Intensity2Latency(30, to_spike=True)
-#    def __call__(self, image):
-#       image = self.to_tensor(image) * 255
-#       image.unsqueeze_(0)
-#       image = self.filter(image)
-#       print (image.shape)
-#       image = sf.local_normalization(image, 8)
-#       return self.temporal_transform(image)
 
 
 class CTNN(nn.Module):
     def __init__(self):
         super(CTNN, self).__init__()
-        self.conv1 = snn.Convolution(6, 30, 5, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
+        self.conv1 = snn.Convolution(2, 30, 5, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
         self.conv2 = snn.Convolution(30, 100, 5, 0.8, 0.02)
         #self.conv3 = snn.Convolution(250, 200, 5, 0.8, 0.05)
 
@@ -204,7 +184,7 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC(verbose=True) # (60000 x 100)
 
-    net = train(net, CIFAR_loader)
+    net = train(net, MNIST_loader)
     torch.save(net.state_dict(), "./checkpoint.pt")
     net.state_dict(torch.load("./cifar_checkpoint.pt"))
     train_outputs, train_y = inference(net, CIFAR_loader)
@@ -218,6 +198,8 @@ if __name__ == "__main__":
     acc = clf.score(test_outputs, test_y)
     print ("Test Accuracy is %.3f" % acc)
     
+
+
 
 
 
