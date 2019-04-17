@@ -6,7 +6,8 @@ import SpykeTorch.utils as utils
 import torchvision.transforms as transforms
 import torch
 from torch.utils.data import Dataset, DataLoader, TensorDataset
-from torchvision.datasets import MNIST, CIFAR
+from torchvision.datasets import MNIST
+from torchvision.datasets import CIFAR10 as CIFAR
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm, trange
