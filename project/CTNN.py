@@ -11,7 +11,6 @@ from torchvision.datasets import CIFAR10 as CIFAR
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm, trange
-from torch.nn. import functional as F 
 use_cuda = False
 MAX_EPOCH = 1
 
