@@ -38,21 +38,21 @@ def generate_inhibition_kernel(inhibition_percents):
 				inhibition_kernel[i,j] = inhibition_percents[dist - 1]
 	return inhibition_kernel
 
-def tensor_to_text(data, address):
-	r"""Saves a tensor into a text file in row-major format. The first line of the file contains comma-separated integers denoting
-	the size of each dimension. The second line contains comma-separated values indicating all the tensor's data.
-
-	Args:
-		data (Tensor): The tensor to be saved.
-		address (str): The saving address.
-	"""
-	f = open(address, "w")
-	data_cpu = data.cpu()
-	shape = data.shape
-	print(",".join(map(str, shape)), file=f)
-	data_flat = data_cpu.view(-1).numpy()
-	print(",".join(data_flat.astype(np.str)), file=f)
-	f.close()
+# def tensor_to_text(data, address):
+# 	r"""Saves a tensor into a text file in row-major format. The first line of the file contains comma-separated integers denoting
+# 	the size of each dimension. The second line contains comma-separated values indicating all the tensor's data.
+#
+# 	Args:
+# 		data (Tensor): The tensor to be saved.
+# 		address (str): The saving address.
+# 	"""
+# 	f = open(address, "w")
+# 	data_cpu = data.cpu()
+# 	shape = data.shape
+# 	print(",".join(map(str, shape)), file=f)
+# 	data_flat = data_cpu.view(-1).numpy()
+# 	print(",".join(data_flat.astype(np.str)), file=f)
+# 	f.close()
 
 def text_to_tensor(address, type='float'):
 	r"""Loads a tensor from a text file. Format of the text file is as follows: The first line of the file contains comma-separated integers denoting
@@ -168,6 +168,29 @@ class DoGKernel(FilterKernel):
 		dog_tensor = torch.from_numpy(dog)
 		return dog_tensor.float()
 
+class OnCenter(FilterKernel):
+	def __init__(self, window_size):
+		super(OnCenter, self).__init__(window_size)
+
+	def __call__(self):
+		kernel = np.zeros((self.window_size, self.window_size))
+		kernel /= -8.0
+		kernel[1][1] = 1.0
+		OC_tensor =  torch.from_numpy(kernel)
+		return OC_tensor.float()
+
+class OffCenter(FilterKernel):
+	def __init__(self, window_size):
+		super(OffCenter, self).__init__(window_size)
+
+	def __call__(self):
+		kernel = np.zeros((self.window_size, self.window_size))
+		kernel /= 8.0
+		kernel[1][1] = -1.0
+		OF_tensor =  torch.from_numpy(kernel)
+		return OF_tensor.float()
+
+
 class GaborKernel(FilterKernel):
 	r"""Generates Gabor filter kernel.
 
@@ -200,6 +223,7 @@ class GaborKernel(FilterKernel):
 		gabor_tensor = torch.from_numpy(gabor)
 		return gabor_tensor.float()
 
+
 class Filter:
 	r"""Applies a filter transform. Each filter contains a sequence of :attr:`FilterKernel` objects.
 	The result of each filter kernel will be passed through a given threshold (if not :attr:`None`).
@@ -212,8 +236,8 @@ class Filter:
 
 	.. note::
 
-		The size of the compund filter kernel tensor (stack of individual filter kernels) will be equal to the 
-		greatest window size among kernels. All other smaller kernels will be zero-padded with an appropriate 
+		The size of the compund filter kernel tensor (stack of individual filter kernels) will be equal to the
+		greatest window size among kernels. All other smaller kernels will be zero-padded with an appropriate
 		amount.
 	"""
 	# filter_kernels must be a list of filter kernels
@@ -267,7 +291,7 @@ class Intensity2Latency:
 	def __init__(self, number_of_spike_bins, to_spike=False):
 		self.time_steps = number_of_spike_bins
 		self.to_spike = to_spike
-	
+
 	# intencities is a tensor of input intencities (1, input_channels, height, width)
 	# returns a tensor of tensors containing spikes in each timestep (considers minibatch for timesteps)
 	# spikes are accumulative, i.e. spikes in timestep i are also presented in i+1, i+2, ...
@@ -288,14 +312,14 @@ class Intensity2Latency:
 
 		#add to the list of timesteps
 		spike_map = torch.zeros_like(intencities_flattened_sorted[0])
-	
+
 		for i in range(self.time_steps):
 			spike_map.scatter_(0, sorted_bins_idx[i], sorted_bins_value[i])
 			spike_map_copy = torch.tensor(spike_map)
 			spike_map_copy = spike_map_copy.reshape(tuple(intencities.shape))
 			bins_intencities.append(spike_map_copy.squeeze(0).float())
 			#bins.append(spike_map_copy.sign().squeeze_(0).float())
-	
+
 		return torch.stack(bins_intencities)#, torch.stack(bins)
 		#return torch.stack(bins)
 
