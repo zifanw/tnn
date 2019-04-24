@@ -11,7 +11,7 @@ from torchvision.datasets import CIFAR10 as CIFAR
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm, trange
-
+from torch.nn. import functional as F 
 use_cuda = False
 MAX_EPOCH = 1
 
@@ -61,6 +61,8 @@ class CTNN(nn.Module):
         self.stdp3 = snn.STDP(self.conv3, (0.004, -0.003))
         self.ctx = {"input_spikes": None, "potentials": None, "output_spikes":None, "winners":None}
 
+        self.pool = torch.nn.AdaptiveMaxPool3d((300,18,18))
+
     def save_data(self, input_spk, pot, spk, winners):
         self.ctx["input_spikes"] = input_spk
         self.ctx["potentials"] = pot
@@ -99,9 +101,8 @@ class CTNN(nn.Module):
             spk, pot = sf.fire(pot, 10, True)
             pot_1 = self.conv2(sf.pad(sf.pooling(spk, 2, 2), (1,1,1,1)))
             pot_2 = self.conv3(input)
-
-            print (pot_1.shape, pot_2.shape)
-            return spk, [pot_1, pot_2]
+            pot_2 = self.pool(pot_2)
+            return spk, torch.cat([pot_1, pot_2], dim=1)
 
     # def forward(self, input, max_layer):
     #     input = sf.pad(input, (2,2,2,2))
@@ -181,17 +182,9 @@ def inference(net, data_loader):
         for i in range(len(data)):
             torch.cuda.empty_cache()
             data_in = data[i].cuda() if use_cuda else data[i]
-            _, pots = net(data_in, 4)
-            #spk = spk.cpu()
-            pot = []
-            for p in pots:
-                p=pot.cpu().numpy()
-                p=GMP(p)
-                pot.append(p)
-            if len(pot) == 1:
-                pot = pot[0]
-            else:
-                pot = np.hstack(pot) # (1, C1+C2)
+            _, pot = net(data_in, 4)
+            pot=pot.cpu().numpy()
+            pot=GMP(pot)
             outputs.append(pot)
         labels.append(target)
     outputs = np.vstack(outputs)
