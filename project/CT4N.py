@@ -7,12 +7,14 @@ import torchvision.transforms as transforms
 import torch
 from torch.utils.data import Dataset, DataLoader, TensorDataset
 from torchvision.datasets import MNIST
-
+from torch.autograd import Variable
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from tqdm import tqdm, trange
+
 use_cuda = True
 MAX_EPOCH = 1
+MAX_EPOCH2 = 10
 Threshold_1 = 15
 Threshold_2 = 10
 
@@ -156,21 +158,71 @@ class Model:
         self.net = Neural_Network(10)
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=0.001)
-        self.train_dataset = None
         self.train_data_loader = None
+        self.test_data_loader = None
+        self.test_size = 0
     
-    def get_train_data(self, train_dataset):
-        self.train_dataset = Data.TensorDataset(train_dataset[0], train_dataset[1])
-        self.train_data_loader = Data.DataLoader(self.train_dataset,
+    def get_dataset(self, dataset):
+        train_dataset, test_dataset = dataset[0], dataset[1]
+        self.test_size = test_dataset[0].shape[0]
+        train_dataset = TensorDataset(train_dataset[0], train_dataset[1])
+        test_dataset = TensorDataset(test_dataset[0], test_dataset[1])
+        
+        self.train_data_loader = DataLoader(self.train_dataset,
                                         batch_size=64,
                                         shuffle=True,
                                         num_workers=8)
-        print ("------------Training Data is Loaded----------------")
+        self.test_data_loader = DataLoader(test_dataset,
+                                        batch_size=64,
+                                        shuffle=False,
+                                        num_workers=8)
+        print ("-----------Training Data is Loaded----------------")
 
     
 
-        
+    def run(self):
+        for e in range(MAX_EPOCH2):
+            epoch_loss = 0
+            correct = 0
+            for batch_idx, (data, label) in enumerate(self.train_data_loader):
+                self.optimizer.zero_grad()
+                X = Variable(data)
+                Y = Variable(label)
+                self.model = self.model.cuda()
+                X = X.cuda()
+                Y = Y.cuda()
+                output = self.model(X)
+                loss = self.criterion(output, Y)
+                loss.backward()
+                self.optimizer.step()
+                pred = output.data.max(1)[1]
+                predicted = pred.eq(Y.data.view_as(pred))
+                correct += predicted.sum()
+                epoch_loss += loss.data[0]
+            epoch_loss = epoch_loss.cpu()
+            correct = correct.cpu()
+            total_loss = epoch_loss.numpy()/self.train_size
+            train_acc = correct.numpy()/self.train_size
+            print("epoch: {0}, loss: {1:.8f}, train_acc: {2:.8f}".format(e, total_loss, train_acc))
+        self.save_model('./clfmodel.pt')
 
+    def inference(self):
+        correct = 0
+        self.model.eval()
+        with torch.no_grad():
+            for data, label in self.test_data_loader:
+                X = Variable(data)
+                Y = Variable(label)
+                if self.gpu:
+                    self.model = self.model.cuda()
+                    X = X.cuda()
+                    Y = Y.cuda()
+                out = self.model(X)
+                pred = out.data.max(1, keepdim=True)[1]
+                predicted = pred.eq(Y.data.view_as(pred))
+                correct += predicted.sum()
+            correct = correct.cpu()
+            return correct.numpy() / self.test_size
 
 
 def train_unsupervised(network, data, layer_idx):
@@ -193,7 +245,6 @@ def train(net, data_loader):
     #     for data, _ in tqdm(data_loader):
     #         train_unsupervised(net, data, 3)
     return net
-
 
 def inference(net, data_loader):
     net = net.cuda() if use_cuda else net
@@ -273,7 +324,8 @@ if __name__ == "__main__":
 
 
     net = CTNN()
-    clf = svm.SVC()
+    clf = Model()
+    
 
     net = train(net, MNIST_loader)
     torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
@@ -282,8 +334,13 @@ if __name__ == "__main__":
     test_outputs, test_y  = inference(net, MNIST_test_loader)
     train_outputs, test_outputs = preprocess(train_outputs, test_outputs)
 
-    clf.fit(train_outputs, train_y)
-    acc=clf.score(train_outputs, train_y)
+    train_data_set = (train_outputs, train_y)
+    test_data_set = (test_outputs, test_y)
+    data_set = [train_data_set, test_data_set]
+    clf.get_dataset(data_set)
+    clf.run()
+    test_acc = clf.inference()
+
     print ("Training Accuracy is %.3f" % acc)
 
     acc = clf.score(test_outputs, test_y)
