@@ -143,6 +143,35 @@ class CTNN(nn.Module):
         if layer_idx == 3:
             self.stdp3(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
 
+class Neural_Network(nn.Module):
+    def __init__(self, output_size):
+        super(NN, self).__init__()
+        self.layer1 = nn.Linear(100, output_size) 
+    
+    def forward(self, x):
+        return self.layer1(x)
+    
+class Model:
+    def __init__(self):
+        self.net = Neural_Network(10)
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = torch.optim.Adam(self.net.parameters(), lr=0.001)
+        self.train_dataset = None
+        self.train_data_loader = None
+    
+    def get_train_data(self, train_dataset):
+        self.train_dataset = Data.TensorDataset(train_dataset[0], train_dataset[1])
+        self.train_data_loader = Data.DataLoader(self.train_dataset,
+                                        batch_size=64,
+                                        shuffle=True,
+                                        num_workers=8)
+        print ("------------Training Data is Loaded----------------")
+
+    
+
+        
+
+
 
 def train_unsupervised(network, data, layer_idx):
     network.train()
@@ -176,7 +205,7 @@ def inference(net, data_loader):
             torch.cuda.empty_cache()
             data_in = data[i].cuda() if use_cuda else data[i]
             _, pot = net(data_in, 4)
-            pot=pot.detach().cpu().numpy()
+            pot=pot.cpu().numpy()
             pot=GMP(pot)
             outputs.append(pot)
         labels.append(target)
@@ -246,8 +275,8 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC()
 
-    # net = train(net, MNIST_loader)
-    # torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
+    net = train(net, MNIST_loader)
+    torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
     net.state_dict(torch.load("./MNISTcheckpoint.pt"))
     train_outputs, train_y = inference(net, MNIST_loader)
     test_outputs, test_y  = inference(net, MNIST_test_loader)
