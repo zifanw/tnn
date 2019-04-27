@@ -148,10 +148,15 @@ class CTNN(nn.Module):
 class Neural_Network(nn.Module):
     def __init__(self, output_size):
         super(NN, self).__init__()
-        self.layer1 = nn.Linear(100, output_size) 
+        self.layer1 = nn.Linear(100, 1024) 
+        self.act = nn.ReLU()
+        self.layer2 = nn.Linear(1024, output_size)
     
     def forward(self, x):
-        return self.layer1(x)
+        x = self.layer1(x)
+        x = self.act(x)
+        return self.layer2(x)
+
     
 class Model:
     def __init__(self):

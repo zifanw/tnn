@@ -52,7 +52,8 @@ class CTNN(nn.Module):
     def __init__(self):
         super(CTNN, self).__init__()
         self.conv1 = snn.Convolution(2, 30, 7, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
-        self.conv2 = snn.Convolution(30, 100, 5, 0.8, 0.05)
+        self.conv2 = snn.Convolution(30, 100, 7, 0.8, 0.02\
+            )
         # self.conv3 = snn.Convolution(12, 300, 7, 0.8, 0.02)
         #self.conv4 = snn.Convolution(100, 200, 3, 0.8, 0.05)
 
@@ -140,8 +141,8 @@ class CTNN(nn.Module):
                 self.stdp1(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
         if layer_idx == 2:
             self.stdp2(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
-        if layer_idx == 3:
-            self.stdp3(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
+        # if layer_idx == 3:
+        #     self.stdp3(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
 
 
 def train_unsupervised(network, data, layer_idx):
@@ -237,7 +238,7 @@ if __name__ == "__main__":
     data_root = 'data/'
 
     MNIST_train = utils.CacheDataset(MNIST(root=data_root, train=True, download=True, transform=transform)) # 60000 x 30 x 30
-    MNIST_test = utils.CacheDataset(MNIST(root=data_root, train=True, download=True, transform=transform)) # 10000 x 30
+    MNIST_test = utils.CacheDataset(MNIST(root=data_root, train=False, download=True, transform=transform)) # 10000 x 30
 
     MNIST_loader = DataLoader(MNIST_train, batch_size=1000, shuffle=True)
     MNIST_test_loader = DataLoader(MNIST_test, batch_size=1000, shuffle=False)
