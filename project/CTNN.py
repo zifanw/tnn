@@ -51,7 +51,7 @@ class InputTransform:
 class CTNN(nn.Module):
     def __init__(self):
         super(CTNN, self).__init__()
-        self.conv1 = snn.Convolution(2, 30, 7, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
+        self.conv1 = snn.Convolution(4, 30, 7, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
         self.conv2 = snn.Convolution(30, 100, 7, 0.8, 0.02\
             )
         # self.conv3 = snn.Convolution(12, 300, 7, 0.8, 0.02)
@@ -112,7 +112,7 @@ class CTNN(nn.Module):
             spk, pot = sf.fire(pot, Threshold_1, True)
             pot = sf.pointwise_inhibition(pot) # inter-channel inhibition
             if max_layer == 1:
-                winners = sf.get_k_winners(pot, 5, 3)
+                winners = sf.get_k_winners(pot, 8, 5)
                 self.save_data(input, pot, spk, winners)
                 return spk, pot
             spk_in = sf.pad(sf.pooling(spk, 2, 2), (1,1,1,1))
@@ -155,12 +155,16 @@ def train_unsupervised(network, data, layer_idx):
 
 def train(net, data_loader):
     net = net.cuda() if use_cuda else net
+    i = 0
+    for epoch in trange(MAX_EPOCH):
+        for  data, _ in tqdm(data_loader):
+            if i < 40000:
+               train_unsupervised(net, data, 1)
+            i += 1
     for epoch in trange(MAX_EPOCH):
         for data, _ in tqdm(data_loader):
-            train_unsupervised(net, data, 1)
-    for epoch in trange(MAX_EPOCH):
-        for data, _ in tqdm(data_loader):
-            train_unsupervised(net, data, 2)
+            if np.random.random() > 0.2:
+               train_unsupervised(net, data, 2)
     # for epoch in trange(MAX_EPOCH):
     #     for data, _ in tqdm(data_loader):
     #         train_unsupervised(net, data, 3)
@@ -177,7 +181,7 @@ def inference(net, data_loader):
             torch.cuda.empty_cache()
             data_in = data[i].cuda() if use_cuda else data[i]
             _, pot = net(data_in, 4)
-            pot=pot.detach().cpu().numpy()
+            pot=pot.cpu().numpy()
             pot=GMP(pot)
             outputs.append(pot)
         labels.append(target)
@@ -225,10 +229,10 @@ def preprocess(x, xtest):
 
 if __name__ == "__main__":
 
-    # kernels = [ utils.DoGKernel(3,1,2), utils.DoGKernel(3,2,1),
-    #             utils.OnCenter(3), utils.OffCenter(3)]
+    kernels = [ utils.DoGKernel(3,1,2), utils.DoGKernel(3,2,1),
+                 utils.OnCenter(3), utils.OffCenter(3)]
 
-    kernels = [utils.DoGKernel(3,1,2), utils.DoGKernel(3,2,1)]
+    #kernels = [utils.DoGKernel(3,1,2), utils.DoGKernel(3,2,1)]
 
 
     filter = utils.Filter(kernels, padding = 6, thresholds = 50)
@@ -247,13 +251,17 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC()
 
-    # net = train(net, MNIST_loader)
-    # torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
+    net = train(net, MNIST_loader)
+    torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
     net.state_dict(torch.load("./MNISTcheckpoint.pt"))
     train_outputs, train_y = inference(net, MNIST_loader)
     test_outputs, test_y  = inference(net, MNIST_test_loader)
     train_outputs, test_outputs = preprocess(train_outputs, test_outputs)
-
+    np.save('train_outputs.npy', train_outputs)
+    np.save('train_y.npy', train_y)
+    np.save('test_x.npy', test_outputs)
+    np.save('test_y.npy', test_y)
+    print ('Test data is saved')
     clf.fit(train_outputs, train_y)
     acc=clf.score(train_outputs, train_y)
     print ("Training Accuracy is %.3f" % acc)
