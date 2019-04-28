@@ -113,7 +113,7 @@ class CTNN(nn.Module):
             pot = sf.pointwise_inhibition(pot) # inter-channel inhibition
             if max_layer == 1:
                 winners = sf.get_k_winners(pot, 8, 5)
-                self.save_data(input.cpu(), pot.cpu(), spk.cpu(), winners.cpu())
+                self.save_data(input, pot, spk, winners)
                 return spk, pot
             spk_in = sf.pad(sf.pooling(spk, 2, 2), (1,1,1,1))
             pot = self.conv2(spk_in)
@@ -121,7 +121,7 @@ class CTNN(nn.Module):
             pot = sf.pointwise_inhibition(pot) # inter-channel inhibition
             if max_layer == 2:
                 winners = sf.get_k_winners(pot, 8, 5)
-                self.save_data(input.cpu(), pot.cpu(), spk.cpu(), winners.cpu())
+                self.save_data(input, pot, spk, winners)
                 return spk, pot
 
         else:
@@ -138,9 +138,9 @@ class CTNN(nn.Module):
 
     def stdp(self, layer_idx):
         if layer_idx == 1:
-            self.stdp1(self.ctx["input_spikes"].cuda(), self.ctx["potentials"].cuda(), self.ctx["output_spikes"].cuda(), self.ctx["winners"].cuda())
+            self.stdp1(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
         if layer_idx == 2:
-            self.stdp2(self.ctx["input_spikes"].cuda(), self.ctx["potentials"].cuda(), self.ctx["output_spikes"].cuda(), self.ctx["winners"].cuda())
+            self.stdp2(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
         # if layer_idx == 3:
         #     self.stdp3(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
 
