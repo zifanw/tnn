@@ -113,7 +113,7 @@ class CTNN(nn.Module):
             pot = sf.pointwise_inhibition(pot) # inter-channel inhibition
             if max_layer == 1:
                 winners = sf.get_k_winners(pot, 8, 5)
-                self.save_data(input, pot, spk, winners)
+                self.save_data(input.cpu(), pot.cpu(), spk.cpu(), winners.cpu())
                 return spk, pot
             spk_in = sf.pad(sf.pooling(spk, 2, 2), (1,1,1,1))
             pot = self.conv2(spk_in)
@@ -121,7 +121,7 @@ class CTNN(nn.Module):
             pot = sf.pointwise_inhibition(pot) # inter-channel inhibition
             if max_layer == 2:
                 winners = sf.get_k_winners(pot, 8, 5)
-                self.save_data(spk_in, pot, spk, winners)
+                self.save_data(input.cpu(), pot.cpu(), spk.cpu(), winners.cpu())
                 return spk, pot
 
         else:
@@ -138,9 +138,9 @@ class CTNN(nn.Module):
 
     def stdp(self, layer_idx):
         if layer_idx == 1:
-                self.stdp1(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
+            self.stdp1(self.ctx["input_spikes"].cuda(), self.ctx["potentials"].cuda(), self.ctx["output_spikes"].cuda(), self.ctx["winners"].cuda())
         if layer_idx == 2:
-            self.stdp2(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
+            self.stdp2(self.ctx["input_spikes"].cuda(), self.ctx["potentials"].cuda(), self.ctx["output_spikes"].cuda(), self.ctx["winners"].cuda())
         # if layer_idx == 3:
         #     self.stdp3(self.ctx["input_spikes"], self.ctx["potentials"], self.ctx["output_spikes"], self.ctx["winners"])
 
@@ -155,14 +155,14 @@ def train_unsupervised(network, data, layer_idx):
 
 def train(net, data_loader):
     net = net.cuda() if use_cuda else net
-    i = 0
     for epoch in trange(MAX_EPOCH):
         for  data, _ in tqdm(data_loader):
-            if i < 40000:
-               train_unsupervised(net, data, 1)
-            i += 1
+            if np.random.random() > 0.2:
+                torch.cuda.empty_cache()
+                train_unsupervised(net, data, 1)
     for epoch in trange(MAX_EPOCH):
         for data, _ in tqdm(data_loader):
+            torch.cuda.empty_cache()
             if np.random.random() > 0.2:
                train_unsupervised(net, data, 2)
     # for epoch in trange(MAX_EPOCH):
@@ -181,7 +181,7 @@ def inference(net, data_loader):
             torch.cuda.empty_cache()
             data_in = data[i].cuda() if use_cuda else data[i]
             _, pot = net(data_in, 4)
-            pot=pot.cpu().numpy()
+            pot=pot.detach().cpu().numpy()
             pot=GMP(pot)
             outputs.append(pot)
         labels.append(target)
