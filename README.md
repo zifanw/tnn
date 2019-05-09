@@ -1,40 +1,24 @@
-# tnn
+## Group Project for CMU 18-847 2019 Spring
 
-### Sample Usage 
-
-    from layer import Inhibitory_Layer as IL
-    from layer import Excitatory_Layer as EL
-    from layer import LateralInhibiton_Layer as LL
-    import firstlayer as firstlayer
-
-    #Layer initialization
-    layer1 = firstlayer.FirstLayer(1)
-    layer2 = IL(layer_id=1,
-                prev_layer=layer1,
-                threshold=3,
-                receptive_field=12)
-
-    layer3 = EL(input_dim=8,
-                output_dim=16,
-                layer_id=3,
-                prev_layer=layer2,
-                threshold=2,  
-                initial_weight=1)
-    layer4 = LL(layer_id=4,
-                prev_layer=layer3,
-                threshold=None,
-                receptive_field=None)
+### Convolutional Spiking Neural Network and Temperal Neural Network
 
 
-    #Forward pass of each layer
-    x1 = layer1.forward(mnist.square_data[-10:], 12)
-    x2 = layer2.forward(x1, mode='Exact')
-    x3 = layer3.forward(x2)
-    x4 = layer4.forward(data=x3)
-    print (x1)
-    print (x2)
-    print (x3)
-    print (x4)
 
-    #Update Weights of a certain layer:
-    layer3 = stdp_update_rule(layer3, x4)
+### Citation 
+
+The architecture of this project uses the CSNN proposed in [STDP-based spiking deep convolutional neural networks for object recognition](https://arxiv.org/abs/1611.01421)
+
+The coding library uses the [Spyketorch](https://arxiv.org/abs/1903.02440). The Github Page of SpykeTorch can be found [here](https://github.com/miladmozafari/SpykeTorch)
+
+
+
+### Overview 
+
+This porject implements the Convolutional Spiking Neural Network (CSNN) with SpykeTorch. We test the performance of CSNN on the MNIST dataset, and compare the results with Temporal Neural Network (TNN). We implement the Band Corelator and General Corelator in the TNN modules to show that CSNN has a better performance compared to TNN. However, we did not achieve as high accuracy as mentioned in the paper, STDP-based spiking deep convolutional neural networks for object recognition. And we also find that traditional machine learning methods may provide better accuracy on MNIST compared to CSNN. Another improvement we made is that we use more classifiers rather than only using SVM. We found that a neural network with only one hidden layer will perform better than using SVM as the final classifier. 
+
+
+
+![Screenshot](imgs/accuracy1.png)
+
+
+
