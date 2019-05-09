@@ -52,8 +52,7 @@ class CTNN(nn.Module):
     def __init__(self):
         super(CTNN, self).__init__()
         self.conv1 = snn.Convolution(4, 30, 7, 0.8, 0.02)  #(in_channels, out_channels, kernel_size, weight_mean=0.8, weight_std=0.02)
-        self.conv2 = snn.Convolution(30, 100, 7, 0.8, 0.02\
-            )
+        self.conv2 = snn.Convolution(30, 100, 7, 0.8, 0.02)
         # self.conv3 = snn.Convolution(12, 300, 7, 0.8, 0.02)
         #self.conv4 = snn.Convolution(100, 200, 3, 0.8, 0.05)
 
@@ -121,7 +120,7 @@ class CTNN(nn.Module):
             pot = sf.pointwise_inhibition(pot) # inter-channel inhibition
             if max_layer == 2:
                 winners = sf.get_k_winners(pot, 8, 5)
-                self.save_data(input, pot, spk, winners)
+                self.save_data(spk_in, pot, spk, winners)
                 return spk, pot
 
         else:
@@ -251,20 +250,29 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC()
 
-    net = train(net, MNIST_loader)
-    torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
+    #net = train(net, MNIST_loader)
+    #torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
     net.state_dict(torch.load("./MNISTcheckpoint.pt"))
-    train_outputs, train_y = inference(net, MNIST_loader)
-    test_outputs, test_y  = inference(net, MNIST_test_loader)
-    train_outputs, test_outputs = preprocess(train_outputs, test_outputs)
-    np.save('train_outputs.npy', train_outputs)
-    np.save('train_y.npy', train_y)
-    np.save('test_x.npy', test_outputs)
-    np.save('test_y.npy', test_y)
-    print ('Test data is saved')
-    clf.fit(train_outputs, train_y)
-    acc=clf.score(train_outputs, train_y)
-    print ("Training Accuracy is %.3f" % acc)
+    conv1_weights = net.conv1.weight.data
+    conv2_weights = net.conv2.weight.data
+    weight1 = conv1_weights.cpu().numpy()
+    weight2 = conv2_weights.cpu().numpy()
+    np.save('weight1.npy', weight1)
+    np.save('weight2.npy', weight2)
+
+
+
+    #train_outputs, train_y = inference(net, MNIST_loader)
+    #test_outputs, test_y  = inference(net, MNIST_test_loader)
+    #train_outputs, test_outputs = preprocess(train_outputs, test_outputs)
+    #np.save('train_outputs.npy', train_outputs)
+    #np.save('train_y.npy', train_y)
+    #np.save('test_x.npy', test_outputs)
+    #np.save('test_y.npy', test_y)
+    #print ('Test data is saved')
+    #clf.fit(train_outputs, train_y)
+    #acc=clf.score(train_outputs, train_y)
+    #print ("Training Accuracy is %.3f" % acc)
 
     acc = clf.score(test_outputs, test_y)
     print ("Test Accuracy is %.3f" % acc)
