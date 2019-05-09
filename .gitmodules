@@ -1,0 +1,3 @@
+[submodule "SpykeTorch"]
+	path = SpykeTorch
+	url = https://github.com/miladmozafari/SpykeTorch.git
