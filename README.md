@@ -20,5 +20,16 @@ This porject implements the Convolutional Spiking Neural Network (CSNN) with Spy
 
 ![Screenshot](imgs/accuracy1.png)
 
+![Screenshot](imgs/accuracy2.png)
+
+
+
+### Dependency
+
+* Python 3.6
+* Numpy
+* Pytorch 
+* SpykeTorch
+
 
 
