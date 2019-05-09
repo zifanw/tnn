@@ -33,3 +33,11 @@ This porject implements the Convolutional Spiking Neural Network (CSNN) with Spy
 
 
 
+### Training and Testing 
+
+`python project/CTNN.py` 
+
+
+
+
+
