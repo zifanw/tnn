@@ -132,7 +132,7 @@ class CTNN(nn.Module):
            # spk = sf.fire(pot, 10)
            # pot = self.conv3(sf.pad(sf.pooling(spk, 3, 3), (2,2,2,2)))
            # spk = sf.fire_(pot)
-    
+
             return spk, pot
 
     def stdp(self, layer_idx):
@@ -250,8 +250,8 @@ if __name__ == "__main__":
     net = CTNN()
     clf = svm.SVC()
 
-    #net = train(net, MNIST_loader)
-    #torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
+    net = train(net, MNIST_loader)
+    torch.save(net.state_dict(), "./MNISTcheckpoint.pt")
     net.state_dict(torch.load("./MNISTcheckpoint.pt"))
     conv1_weights = net.conv1.weight.data
     conv2_weights = net.conv2.weight.data
@@ -260,19 +260,12 @@ if __name__ == "__main__":
     np.save('weight1.npy', weight1)
     np.save('weight2.npy', weight2)
 
-
-
-    #train_outputs, train_y = inference(net, MNIST_loader)
-    #test_outputs, test_y  = inference(net, MNIST_test_loader)
-    #train_outputs, test_outputs = preprocess(train_outputs, test_outputs)
-    #np.save('train_outputs.npy', train_outputs)
-    #np.save('train_y.npy', train_y)
-    #np.save('test_x.npy', test_outputs)
-    #np.save('test_y.npy', test_y)
-    #print ('Test data is saved')
-    #clf.fit(train_outputs, train_y)
-    #acc=clf.score(train_outputs, train_y)
-    #print ("Training Accuracy is %.3f" % acc)
+    train_outputs, train_y = inference(net, MNIST_loader)
+    test_outputs, test_y  = inference(net, MNIST_test_loader)
+    train_outputs, test_outputs = preprocess(train_outputs, test_outputs)
+    clf.fit(train_outputs, train_y)
+    acc=clf.score(train_outputs, train_y)
+    print ("Training Accuracy is %.3f" % acc)
 
     acc = clf.score(test_outputs, test_y)
     print ("Test Accuracy is %.3f" % acc)
