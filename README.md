@@ -33,6 +33,38 @@ This porject implements the Convolutional Spiking Neural Network (CSNN) with Spy
 
 
 
+### Change of SpykeTorch
+
+In our implementation, we add two more filters: ON-Center/OFF-Center filters.  If you want to use these two filters, please add the following codes into SpykeTorch/utils.py
+
+
+
+```
+class OnCenter(FilterKernel):
+	def __init__(self, window_size):
+		super(OnCenter, self).__init__(window_size)
+
+	def __call__(self):
+		kernel = np.zeros((self.window_size, self.window_size))
+		kernel /= -8.0
+		kernel[1][1] = 1.0
+		OC_tensor =  torch.from_numpy(kernel)
+		return OC_tensor.float()
+
+class OffCenter(FilterKernel):
+	def __init__(self, window_size):
+		super(OffCenter, self).__init__(window_size)
+
+	def __call__(self):
+		kernel = np.zeros((self.window_size, self.window_size))
+		kernel /= 8.0
+		kernel[1][1] = -1.0
+		OF_tensor =  torch.from_numpy(kernel)
+		return OF_tensor.float()
+```
+
+
+
 ### Training and Testing 
 
 `python project/CTNN.py` 
